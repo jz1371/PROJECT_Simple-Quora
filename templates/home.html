@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8" />
+</head>
+<body>
+	<header>Welcome to this simple quora.</header>
+	<footer>
+		<a href="{{ url|safe }}">{{ url_linktext }}</a>
+	</footer>
+</body>
+</html>
+{% endautoescape %}
