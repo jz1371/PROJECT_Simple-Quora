@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>View question</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript">
+function message()
+{
+	// this will show after alert message Line 26
+	//alert("This function is callled with onload event")	
+}
+</script>
+</head>
+<body onload="message()">
+	<div>
+	<h2>{{ q_content }} </h2>
+	<td>
+		{{q_vote}}
+		<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}"' >
+		<input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}"' >
+	</td>
+	</div>
+
+	<!-- Below script will show then other parts will appear -->
+	<script type="text/javascript">
+		//alert("Hello");
+	</script>
+	<!-- On click this link, a script alert will appear first, then goes to the linked address -->
+	<a href="http://www.umich.edu" onclick="alert('Ouch!')">Plan A</a>
+	<!-- Add return false will stop browser goes to that link --> 
+	<a href="http://www.umich.edu" onclick="alert('Yow!');return false;"> Plan B</a>
+	<!-- This button when clicked, will navigate to '/' page, and not submit the form -->
+	<input type="button" onclick="window.location='/'; return false;" value="Cancel and not submit form">
+	
+	<!--  -->
+	<p>
+	<a href="#"
+	 onclick="document.getElementById('stuff').innerHTML = 'BACK';">BACK</a>
+	<a href="#"
+	 onclick="document.getElementById('stuff').innerHTML = 'FORTH';">FORTH</a>
+	</p>
+	<p>
+	Hello <b><span id="stuff">Stuff</span></b> there.
+	</p>
+	
+	
+	<div>
+		<p> create your answer </p>
+		<form action="/create-answer" method="post">
+    			<div><textarea name="answer" id="answer" rows="3" cols="60"></textarea></div>
+    			<div><input type="hidden" name="qid" value="{{ qid }}"></div> 
+    			<p>
+    			<!-- Simple way to clear input field -->
+    			<input type="reset" value="Clear">
+    			<input type="submit" value="Submit answer">
+    			</p>
+    		</form>
+		<p> <a href="/answer?qid={{qid}}"> Create an answer</a> </p>
+	</div>
+
+	<div>
+	{% for ans in answers: %}
+			{{ ans[1].content_ }}
+		<td>
+			<p>
+			{{ ans[0] }}
+			<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
+			<input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
+			</p>
+		</td>
+
+	{% endfor %}
+	</div>
+</body>
+</html>

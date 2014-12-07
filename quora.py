@@ -1,112 +1,144 @@
+#self.response.write()
 """
 File: quora.py
 --------------------
 """
-# [START imports]
 import os
 import urllib
 
 from google.appengine.api import users
-from google.appengine.ext import ndb
 
 import jinja2
 import webapp2
 
+import question
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
-# [END imports]
 
-DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
-
-
-# We set a parent key on the 'Greetings' to ensure that they are all in the same
-# entity group. Queries across the single entity group will be consistent.
-# However, the write rate should be limited to ~1/second.
-
-def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
-    """Constructs a Datastore key for a Guestbook entity with guestbook_name."""
-    return ndb.Key('Guestbook', guestbook_name)
-
-
-class Greeting(ndb.Model):
-    """Models an individual Guestbook entry with author, content, and date."""
-    author = ndb.UserProperty()
-    content = ndb.StringProperty(indexed=False)
-    date = ndb.DateTimeProperty(auto_now_add=True)
-
-
-# [START main_page]
-class MainPage(webapp2.RequestHandler):
-
-    def get(self):
-        guestbook_name = self.request.get('guestbook_name',
-                                          DEFAULT_GUESTBOOK_NAME)
-        greetings_query = Greeting.query(
-            ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
-        greetings = greetings_query.fetch(10)
-
-        if users.get_current_user():
-            url = users.create_logout_url(self.request.uri)
-            url_linktext = 'Logout'
-        else:
-            url = users.create_login_url(self.request.uri)
-            url_linktext = 'Login'
-
-        template_values = {
-            'greetings': greetings,
-            'guestbook_name': urllib.quote_plus(guestbook_name),
-            'url': url,
-            'url_linktext': url_linktext,
-        }
-
-        template = JINJA_ENVIRONMENT.get_template('templates/index.html')
-        self.response.write(template.render(template_values))
-# [END main_page]
+def processViewPage(qid):
+    profile = question.view(qid)
+#         self.response.write(content)
+    template_values = {
+        'qid': qid,
+        'q_content': profile['question'][0],
+        'q_vote': profile['question'][1],
+        'answers': profile['answer'],
+    }
+    return template_values 
 
 class HomePage(webapp2.RequestHandler):
     def get(self):
         if users.get_current_user():
+            self.response.write("here")
             url = users.create_logout_url(self.request.uri)
             url_linktext = 'Logout'
         else:
             url = users.create_login_url(self.request.uri)
             url_linktext = 'Login use Google account'
+        
+        question_keys = question.list_all()
 
         template_values = {
             'version:': 'v1.0',
             'url': url,
             'url_linktext': url_linktext,
+            'question_keys': question_keys,
         }
-        template = JINJA_ENVIRONMENT.get_template('templates/home.html')
+        template = JINJA_ENVIRONMENT.get_template('/templates/home.html')
         self.response.write(template.render(template_values))
 # [END home_page]
 
-class Quora(webapp2.RequestHandler):
-
-    def post(self):
-        # We set the same parent key on the 'Greeting' to ensure each Greeting
-        # is in the same entity group. Queries across the single entity group
-        # will be consistent. However, the write rate to a single entity group
-        # should be limited to ~1/second.
-        guestbook_name = self.request.get('guestbook_name',
-                                          DEFAULT_GUESTBOOK_NAME)
-        greeting = Greeting(parent=guestbook_key(guestbook_name))
-
+class CreateQuestionPage(webapp2.RedirectHandler):
+    def get(self):
         if users.get_current_user():
-            greeting.author = users.get_current_user()
-
-        greeting.content = self.request.get('content')
-        greeting.put()
-
-        query_params = {'guestbook_name': guestbook_name}
-        self.redirect('/?' + urllib.urlencode(query_params))
+            self.response.write(users.get_current_user().nickname() + " is writing question")
+            template = JINJA_ENVIRONMENT.get_template('/templates/create_question.html')
+            self.response.write(template.render())
+        else:
+            self.redirect(users.create_login_url(self.request.uri))
 
 
+class CreateQuestion(webapp2.RedirectHandler):
+    # process /question with a post form
+    def post(self):
+        user = users.get_current_user()
+        content = self.request.get('question')
+        q_key = question.create_question(user, content)
+        self.response.write(users.create_login_url(self.request.uri))
+        # PS1. How to redirect and then handle by handler
+        query_params =  {'qid': q_key.id()}
+        self.redirect('/view?' + urllib.urlencode(query_params))
+        
+
+class QuestionProfilePage(webapp2.RedirectHandler):
+
+    def get(self):
+        qid = urllib.unquote(self.request.get('qid'))
+        template_values = processViewPage(qid)
+        template = JINJA_ENVIRONMENT.get_template('/templates/view_question.html')
+        self.response.write(template.render(template_values))
+
+class CreateAnswerPage(webapp2.RedirectHandler):
+    def get(self):
+        if users.get_current_user():
+            self.response.write(users.get_current_user().nickname() + " is answering a question")
+            template = JINJA_ENVIRONMENT.get_template('/templates/create_answer.html')
+            template_values = {'qid': self.request.get('qid')}
+            self.response.write(template.render(template_values))
+        else:
+            self.redirect(users.create_login_url(self.request.uri))
+
+class CreateAnswer(webapp2.RedirectHandler):
+    # process /question with a post form
+    def post(self):
+        user = users.get_current_user()
+        qid = self.request.get('qid')
+        content = self.request.get('answer')
+        a_key = question.create_answer(user, qid, content)
+        query_params = {'qid': qid, 'oper': 'answer'}
+        self.redirect('/prompt?' + urllib.urlencode(query_params))
+        
+        """
+        template_values = processViewPage(qid)
+        template = JINJA_ENVIRONMENT.get_template('/templates/view_question.html')
+        self.response.write(template.render(template_values))
+        """
+        
+
+class Vote(webapp2.RedirectHandler):
+    def get(self):
+        user = users.get_current_user()
+        vote = self.request.get('v')
+        qid = self.request.get('qid')
+        aid = self.request.get('aid')
+        if aid=='':
+            question.create_vote(user, qid, vote)
+        else:
+            question.create_vote(user, qid, vote, aid)
+        query_params = {'qid': qid, 'oper': 'vote'}
+        self.redirect('/prompt?' + urllib.urlencode(query_params))
+
+class Prompt(webapp2.RedirectHandler):
+    def get(self):
+        qid = self.request.get('qid')
+        oper = self.request.get('oper')
+        template_values = {'operation': oper, 'qid' : qid}
+        template = JINJA_ENVIRONMENT.get_template('/templates/prompt_result.html')
+        self.response.write(template.render(template_values))
+
+        
+# ==== Main =====
 app = webapp2.WSGIApplication([
 #    ('/', MainPage),
     ('/', HomePage),
-    ('/sign', Quora),
+    ('/ask', CreateQuestionPage),  # page that user can create a new question
+    ('/create-question', CreateQuestion), 
+    ('/answer', CreateAnswerPage),
+    ('/create-answer', CreateAnswer),
+    ('/view', QuestionProfilePage),
+    ('/vote', Vote),
+    ('/prompt', Prompt),
 ], debug=True)

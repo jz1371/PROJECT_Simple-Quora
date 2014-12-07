@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Feedback to user</title>
+</head>
+<body>
+	<form action="/prompt" method="get">
+		<div>
+			<p>
+			{{ operation }} succeeds
+			</p>
+			<td>
+				<input type="button" value="Homepage"  onclick=location.href="/">
+				<input type="button" value="See result"  onclick=location.href="/view?qid={{qid}}">
+			</td>
+		</div>
+	</form>
+</body>
+</html>

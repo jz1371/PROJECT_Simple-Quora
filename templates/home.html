@@ -2,11 +2,19 @@
 {% autoescape true %}
 <html>
 <head>
-	<title></title>
+	<title>Home page</title>
 	<meta charset="utf-8" />
 </head>
 <body>
 	<header>Welcome to this simple quora.</header>
+		{% for key in question_keys %}
+			<p>
+			<a href="/view?qid={{key.id()}}">{{key.get().content_}}</a>
+			</p>
+    		{% endfor %}
+	
+		<a href="/ask"> Create a question</a>
+	
 	<footer>
 		<a href="{{ url|safe }}">{{ url_linktext }}</a>
 	</footer>
