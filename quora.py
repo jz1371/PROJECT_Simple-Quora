@@ -9,11 +9,13 @@ import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
+import forumDB as DB
 
 import jinja2
 import webapp2
 
 import question
+import time
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -116,7 +118,7 @@ class CreateAnswerPage(webapp2.RedirectHandler):
 
 class CreateAnswer(webapp2.RedirectHandler):
     # process /question with a post form
-    def post(self):
+    def get(self):
         user = users.get_current_user()
         qid = self.request.get('qid')
         content = self.request.get('answer')
@@ -128,9 +130,13 @@ class CreateAnswer(webapp2.RedirectHandler):
             a = a.put()
         else:
             a = question.create_answer(user, qid, content)
-        
-        query_params = {'qid': qid, 'oper': 'answer'}
-        self.redirect('/prompt?' + urllib.urlencode(query_params))
+            
+        query_params = {'qid': qid }
+        # because google use strong-consistence, newly posted data will not be shown immediately
+        time.sleep(0.1) 
+        self.redirect('/view?' + urllib.urlencode(query_params))
+#         query_params = {'qid': qid, 'oper': 'answer'}
+#         self.redirect('/prompt?' + urllib.urlencode(query_params))
         
 
 class Vote(webapp2.RedirectHandler):
