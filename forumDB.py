@@ -30,6 +30,8 @@ class Vote(ndb.Model):
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
     date_last_modified_ = ndb.DateTimeProperty(auto_now=True)
 
-
+class Tag(ndb.Model):
+    name_ = ndb.StringProperty()
+    date_created_ = ndb.DateTimeProperty(auto_now_add=True)
     
     
