@@ -90,19 +90,18 @@ class QuestionProfilePage(webapp2.RedirectHandler):
     def get(self):
         qid = urllib.unquote(self.request.get('qid'))
         profile = question.view(qid)
+        user = users.get_current_user()
+        is_author = (user and user == profile['question'][2])
         template_values = {
+            'is_author': is_author,
+            'cur_user': user,
             'qid': qid,
             'q_content': profile['question'][0],
             'q_vote': profile['question'][1],
             'answers': profile['answer'],
         }
-        user = users.get_current_user()
-        if user and user == profile['question'][2]:
-            # enable the author of the question to edit question
-            self.response.write("same user")
-        else:
-            self.response.write("not the same user")
         template = JINJA_ENVIRONMENT.get_template('/templates/view_question.html')
+#         self.response.write(is_author)
         self.response.write(template.render(template_values))
 
 class CreateAnswerPage(webapp2.RedirectHandler):
@@ -121,15 +120,17 @@ class CreateAnswer(webapp2.RedirectHandler):
         user = users.get_current_user()
         qid = self.request.get('qid')
         content = self.request.get('answer')
-        a_key = question.create_answer(user, qid, content)
+        aid = self.request.get('aid')
+        if aid:
+            key = ndb.Key('Answer', long(aid))
+            a = key.get()
+            a.content_ = content
+            a = a.put()
+        else:
+            a = question.create_answer(user, qid, content)
+        
         query_params = {'qid': qid, 'oper': 'answer'}
         self.redirect('/prompt?' + urllib.urlencode(query_params))
-        
-        """
-        template_values = processViewPage(qid)
-        template = JINJA_ENVIRONMENT.get_template('/templates/view_question.html')
-        self.response.write(template.render(template_values))
-        """
         
 
 class Vote(webapp2.RedirectHandler):

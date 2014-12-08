@@ -13,12 +13,19 @@ $(document).ready(function(){
 	    $("#origin").show();
 	  });
 	});
+function editAns(id) {
+	var x = document.getElementById(id);
+	x.style.display = "block";
+}
+
 </script>
 </head>
-<body onload="message()">
+<body >
 	<div>
 		<p>
-		<input type="button" id="edit" value="edit" onClick="enableEdit()" >
+		{% if is_author %}
+			<input type="button" id="edit" value="edit" onClick="" >
+		{% endif %}
 		<pre>{{ q_content }} </pre>
 		</p>
 		<p>
@@ -53,16 +60,31 @@ $(document).ready(function(){
 
 	<div>
 	{% for ans in answers: %}
-			<pre>{{ ans[1].content_ }} </pre>
-		<td>
-			<p>
-			{{ ans[0] }}
-			<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
+	
+		<p>
+		{% if ans[1].author_ == cur_user %}
+			<input type="button" id="editans" value="edit answer" onClick="editAns({{ans[1].key.id()}})" >
+		{% endif %}
+		<pre>{{ ans[1].content_ }} </pre>
+		</p>
+		<p>
+        		{{ ans[0] }}
+        		<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
 			<input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
-			</p>
-		</td>
+        </p>
 
+		<form id="{{ans[1].key.id()}}" style="display:none;" action="/create-answer" method="post">
+			<p> Edit your answer</p>
+			<div><textarea name="answer" rows="3" cols="60">{{ans[1].content_}}</textarea></div>
+			<input type="hidden" name="qid" value = "{{ qid }}" >
+			<input type="hidden" name="aid" value={{ans[1].key.id()}} >
+    			<input id="cancel" type="reset" value="Clear">
+    			<input type="submit" value="Post it">
+		</form>
+		
 	{% endfor %}
+	
+	
 	</div>
 </body>
 </html>
