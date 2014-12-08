@@ -52,7 +52,7 @@ def view(question_id):
     q_v_up = DB.Vote.query(DB.Vote.qid_ == question_id, DB.Vote.aid_ == None, DB.Vote.vote_ == 'up').count()
     print q_v_up
     q_v_down = DB.Vote.query(DB.Vote.qid_ == question_id, DB.Vote.aid_ == None, DB.Vote.vote_ == 'down').count()
-    questions = (question.content_, q_v_up - q_v_down)
+    questions = (question.content_, q_v_up - q_v_down, question.user_)
     
     # need get() or fetch() to get the entity from query
     answer = DB.Answer.query(DB.Answer.qid_ == question_id).fetch()

@@ -3,49 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <title>View question</title>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script type="text/javascript">
-function message()
-{
-	// this will show after alert message Line 26
-	//alert("This function is callled with onload event")	
-}
+<script>
+$(document).ready(function(){
+	  $("#cancel").click(function(){ // when item with id="hide" is clicked
+	    $("#origin").hide();
+	  });
+	  $("#edit").click(function(){
+	    $("#origin").show();
+	  });
+	});
 </script>
 </head>
 <body onload="message()">
 	<div>
-	<h2>{{ q_content }} </h2>
-	<td>
-		{{q_vote}}
-		<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}"' >
-		<input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}"' >
-	</td>
+		<p>
+		<input type="button" id="edit" value="edit" onClick="enableEdit()" >
+		<pre>{{ q_content }} </pre>
+		</p>
+		<p>
+        		{{q_vote}}
+        		<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}"' >
+            <input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}"' >
+        </p>
+
+		<form id="origin" style="display:none;" action="/create-question" method="post">
+			<p> Edit your question</p>
+			<div><textarea name="question" rows="3" cols="60">{{q_content}}</textarea></div>
+			<input type="hidden" name="qid" value={{qid}} >
+    			<input id="cancel" type="reset" value="Clear">
+    			<input type="submit" value="Post it">
+		</form>
+		
+
 	</div>
 
-	<!-- Below script will show then other parts will appear -->
-	<script type="text/javascript">
-		//alert("Hello");
-	</script>
-	<!-- On click this link, a script alert will appear first, then goes to the linked address -->
-	<a href="http://www.umich.edu" onclick="alert('Ouch!')">Plan A</a>
-	<!-- Add return false will stop browser goes to that link --> 
-	<a href="http://www.umich.edu" onclick="alert('Yow!');return false;"> Plan B</a>
-	<!-- This button when clicked, will navigate to '/' page, and not submit the form -->
-	<input type="button" onclick="window.location='/'; return false;" value="Cancel and not submit form">
-	
-	<!--  -->
-	<p>
-	<a href="#"
-	 onclick="document.getElementById('stuff').innerHTML = 'BACK';">BACK</a>
-	<a href="#"
-	 onclick="document.getElementById('stuff').innerHTML = 'FORTH';">FORTH</a>
-	</p>
-	<p>
-	Hello <b><span id="stuff">Stuff</span></b> there.
-	</p>
-	
-	
 	<div>
 		<p> create your answer </p>
 		<form action="/create-answer" method="post">
@@ -57,12 +49,11 @@ function message()
     			<input type="submit" value="Submit answer">
     			</p>
     		</form>
-		<p> <a href="/answer?qid={{qid}}"> Create an answer</a> </p>
 	</div>
 
 	<div>
 	{% for ans in answers: %}
-			{{ ans[1].content_ }}
+			<pre>{{ ans[1].content_ }} </pre>
 		<td>
 			<p>
 			{{ ans[0] }}

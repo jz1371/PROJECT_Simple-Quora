@@ -7,6 +7,8 @@ import os
 import urllib
 
 from google.appengine.api import users
+from google.appengine.ext import ndb
+
 
 import jinja2
 import webapp2
@@ -66,10 +68,20 @@ class CreateQuestion(webapp2.RedirectHandler):
     def post(self):
         user = users.get_current_user()
         content = self.request.get('question')
-        q_key = question.create_question(user, content)
-        self.response.write(users.create_login_url(self.request.uri))
+        qid = self.request.get("qid")
+        if qid:
+            # update existing one
+            key = ndb.Key('Question', long(qid))
+            q = key.get()
+            q.content_ = content
+            q = q.put()
+        else:
+            # create a new one
+            q = question.create_question(user, content)
+#         self.response.write(q)
+            
         # PS1. How to redirect and then handle by handler
-        query_params =  {'qid': q_key.id()}
+        query_params =  {'qid': q.id()}
         self.redirect('/view?' + urllib.urlencode(query_params))
         
 
@@ -77,7 +89,19 @@ class QuestionProfilePage(webapp2.RedirectHandler):
 
     def get(self):
         qid = urllib.unquote(self.request.get('qid'))
-        template_values = processViewPage(qid)
+        profile = question.view(qid)
+        template_values = {
+            'qid': qid,
+            'q_content': profile['question'][0],
+            'q_vote': profile['question'][1],
+            'answers': profile['answer'],
+        }
+        user = users.get_current_user()
+        if user and user == profile['question'][2]:
+            # enable the author of the question to edit question
+            self.response.write("same user")
+        else:
+            self.response.write("not the same user")
         template = JINJA_ENVIRONMENT.get_template('/templates/view_question.html')
         self.response.write(template.render(template_values))
 
