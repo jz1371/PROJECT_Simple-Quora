@@ -12,7 +12,7 @@ class Question(ndb.Model):
     user_ = ndb.UserProperty()
     content_ = ndb.StringProperty(indexed=False)
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
-    date_last_modified_ = ndb.DateTimeProperty(auto_now_add=True)
+    date_last_modified_ = ndb.DateTimeProperty(auto_now=True)
     
 class Answer(ndb.Model):
     author_ = ndb.UserProperty()

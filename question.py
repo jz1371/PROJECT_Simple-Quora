@@ -10,13 +10,13 @@ import operator
 """
 # 1. access entity's properties set up by database system,
 # namely, the entity's Key and entity's ID 
-q_key = quesetion.put() has two attributes: 
-q_key.kind()
-q_key.id()
+    q_key = quesetion.put() has two attributes: 
+    q_key.kind()
+    q_key.id()
 # Or, through entity
-entity = Question.get_by_id(qid) 
-print entity.key.kind()  
-print entity.key.id()  
+    entity = Question.get_by_id(qid) 
+    print entity.key.kind()  
+    print entity.key.id()  
 
 # 1.2. access entity's custom property
 # Entity:
@@ -24,9 +24,18 @@ print entity.key.id()
     entity = Question.get_by_id(qid) 
     print entity.content_
 
+# 1.3. fetch()
+
+    keys = Question.query(...).fetch()
+    # keys would contain keys' list
+    key = Question.query(...).get()
+    # This return one single key
+    key.content_ = ...
+    
 
 # skip first 20 results, and only fetch entities' keys
-DB.Question.query().fetch(limit=None, keys_only=True, offset=10)
+
+    DB.Question.query().fetch(limit=None, keys_only=True, offset=10)
 
 """
 
@@ -41,9 +50,20 @@ def create_answer(author, question_id, content):
     a_key = ans.put()
     return a_key
 
+# if vote exists, then update, otherwise, create new vote
 def create_vote(author, qid, vote, aid=None):
-    v = DB.Vote(author_ = author, qid_ = qid, aid_ = aid, vote_ = vote)
-    v_key = v.put()
+    vote_qry = DB.Vote.query(DB.Vote.author_ == author, DB.Vote.qid_ == qid, DB.Vote.aid_ == aid)
+    if vote_qry.count() == 0:
+        print "No vote"
+        # create your one
+        v = DB.Vote(author_ = author, qid_ = qid, aid_ = aid, vote_ = vote)
+        v_key = v.put()
+    else:
+        # edit existing one
+        v_key = vote_qry.get()
+        v_key.vote_ = vote
+        v_key.put()
+        
     return v_key
 
 def view(question_id):
@@ -52,7 +72,7 @@ def view(question_id):
     q_v_up = DB.Vote.query(DB.Vote.qid_ == question_id, DB.Vote.aid_ == None, DB.Vote.vote_ == 'up').count()
     print q_v_up
     q_v_down = DB.Vote.query(DB.Vote.qid_ == question_id, DB.Vote.aid_ == None, DB.Vote.vote_ == 'down').count()
-    questions = (question.content_, q_v_up - q_v_down)
+    questions = (question.content_, q_v_up - q_v_down, question.user_)
     
     # need get() or fetch() to get the entity from query
     answer = DB.Answer.query(DB.Answer.qid_ == question_id).fetch()

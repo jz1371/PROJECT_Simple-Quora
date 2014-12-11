@@ -3,75 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <title>View question</title>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script type="text/javascript">
-function message()
-{
-	// this will show after alert message Line 26
-	//alert("This function is callled with onload event")	
+<script>
+$(document).ready(function(){
+	  $("#cancel").click(function(){ // when item with id="hide" is clicked
+	    $("#origin").hide();
+	  });
+	  $("#edit").click(function(){
+	    $("#origin").show();
+	  });
+	});
+function editAns(id) {
+	var x = document.getElementById(id);
+	x.style.display = "block";
 }
+
 </script>
 </head>
-<body onload="message()">
-	<div>
-	<h2>{{ q_content }} </h2>
-	<td>
-		{{q_vote}}
-		<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}"' >
-		<input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}"' >
-	</td>
-	</div>
+<body >
+	<a href="#area"></a>
 
-	<!-- Below script will show then other parts will appear -->
-	<script type="text/javascript">
-		//alert("Hello");
-	</script>
-	<!-- On click this link, a script alert will appear first, then goes to the linked address -->
-	<a href="http://www.umich.edu" onclick="alert('Ouch!')">Plan A</a>
-	<!-- Add return false will stop browser goes to that link --> 
-	<a href="http://www.umich.edu" onclick="alert('Yow!');return false;"> Plan B</a>
-	<!-- This button when clicked, will navigate to '/' page, and not submit the form -->
-	<input type="button" onclick="window.location='/'; return false;" value="Cancel and not submit form">
+	<div>
+		<p>
+		{% if is_author %}
+			<input type="button" id="edit" value="edit" onClick="" >
+		{% endif %}
+		<pre>{{ q_content }} </pre>
+		</p>
+		<p>
+        		{{q_vote}}
+        		<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}"' >
+            <input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}"' >
+        </p>
+
+		<form id="origin" style="display:none;" action="/create-question" method="post">
+			<p> Edit your question</p>
+			<div><textarea name="question" rows="3" cols="60">{{q_content}}</textarea></div>
+			<input type="hidden" name="qid" value = "{{ qid }}" >
+    			<input id="cancel" type="reset" value="Clear">
+    			<input type="submit" value="Post it">
+		</form>
+
+	</div>
 	
-	<!--  -->
-	<p>
-	<a href="#"
-	 onclick="document.getElementById('stuff').innerHTML = 'BACK';">BACK</a>
-	<a href="#"
-	 onclick="document.getElementById('stuff').innerHTML = 'FORTH';">FORTH</a>
-	</p>
-	<p>
-	Hello <b><span id="stuff">Stuff</span></b> there.
-	</p>
+	
+
+	<div>
+	
+	{% for ans in answers: %}
+	
+		<p>
+		{% if ans[1].author_ == cur_user %}
+			<input type="button" id="editans" value="edit answer" onClick="editAns({{ans[1].key.id()}})" >
+		{% endif %}
+		<pre>{{ ans[1].content_ }} </pre>
+		</p>
+		<p>
+        		{{ ans[0] }}
+        		<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
+			<input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
+        </p>
+
+		<form id="{{ans[1].key.id()}}" style="display:none;" action="/create-answer?qid={{qid}}&aid={{ans[1].key.id()}}" method="post">
+			<p> Edit your answer</p>
+			<div><textarea name="answer" rows="3" cols="60">{{ans[1].content_}}</textarea></div>
+    			<input id="cancel" type="reset" value="Clear">
+    			<input type="submit" value="Post it">
+		</form>
+		
+	{% endfor %}
 	
 	
+	</div>
+	
+	<a name="area"></a>
 	<div>
 		<p> create your answer </p>
-		<form action="/create-answer" method="post">
+		<form action="/create-answer?qid={{qid}}" method="post">
     			<div><textarea name="answer" id="answer" rows="3" cols="60"></textarea></div>
-    			<div><input type="hidden" name="qid" value="{{ qid }}"></div> 
     			<p>
     			<!-- Simple way to clear input field -->
     			<input type="reset" value="Clear">
     			<input type="submit" value="Submit answer">
     			</p>
     		</form>
-		<p> <a href="/answer?qid={{qid}}"> Create an answer</a> </p>
-	</div>
-
-	<div>
-	{% for ans in answers: %}
-			{{ ans[1].content_ }}
-		<td>
-			<p>
-			{{ ans[0] }}
-			<input type="button" value="Up" onClick='location.href="/vote?v=up&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
-			<input type="button" value="Down" onClick='location.href="/vote?v=down&qid={{qid}}&aid={{ans[1].key.id()}}"' > 
-			</p>
-		</td>
-
-	{% endfor %}
 	</div>
 </body>
 </html>
