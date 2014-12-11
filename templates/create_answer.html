@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<!-- Template: create_answer.html -->
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Create an answer</title>
-	</head>
-	<body>
-		<form action="/create-answer" method="post">
-    			<div><textarea name="answer" rows="3" cols="60"></textarea></div>
-    			<div><input type="hidden" name="qid" value="{{ qid }}"> </div>
-    			<div><input type="button" value="Cancel" onClick=location.href="/"></div>
-    			<div><input type="submit" value="Submit answer"></div>
+{% extends "/templates/_base.html" %}
+
+{% block title %}
+Create an answer
+{% endblock %}
+
+{% block content %}
+        <form action="/create-answer" method="post">
+            <div><textarea name="answer" rows="3" cols="60"></textarea></div>
+            <div><input type="hidden" name="qid" value="{{ qid }}"> </div>
+            <div><input type="button" value="Cancel" onClick=location.href="/"></div>
+            <div><input type="submit" value="Submit answer"></div>
     		</form>
-	</body>
-</html>
+{% endblock %}	

@@ -156,7 +156,6 @@ class Vote(webapp2.RedirectHandler):
             vote = self.request.get('v')
             qid = self.request.get('qid')
             aid = self.request.get('aid')
-            # editing or creating
             
             if aid=='':
                 question.create_vote(user, qid, vote)
@@ -175,6 +174,13 @@ class Prompt(webapp2.RedirectHandler):
         template = JINJA_ENVIRONMENT.get_template('/templates/prompt_result.html')
         self.response.write(template.render(template_values))
 
+class Test(webapp2.RedirectHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('/templates/test.html')
+        self.response.write(template.render(template_values))
+
+
         
 # ==== Main =====
 app = webapp2.WSGIApplication([
@@ -187,5 +193,6 @@ app = webapp2.WSGIApplication([
     ('/view', QuestionProfilePage),
     ('/vote', Vote),
     ('/prompt', Prompt),
+    ('/test', Test),
     
 ], debug=True)

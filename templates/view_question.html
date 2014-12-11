@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>View question</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+{% extends "/templates/_base.html" %}
+
+{% block title %}
+View question
+{% endblock %}
+
+{% block head %}
+    {{ super() }} 
 <script>
 $(document).ready(function(){
 	  $("#cancel").click(function(){ // when item with id="hide" is clicked
@@ -17,10 +19,10 @@ function editAns(id) {
 	var x = document.getElementById(id);
 	x.style.display = "block";
 }
-
 </script>
-</head>
-<body >
+{% endblock %}
+
+{% block content %}
 	<a href="#area"></a>
 
 	<div>
@@ -28,7 +30,7 @@ function editAns(id) {
 		{% if is_author %}
 			<input type="button" id="edit" value="edit" onClick="" >
 		{% endif %}
-		<pre>{{ q_content }} </pre>
+		<blockquote>{{ q_content }} </blockquote>
 		</p>
 		<p>
         		{{q_vote}}
@@ -56,7 +58,7 @@ function editAns(id) {
 		{% if ans[1].author_ == cur_user %}
 			<input type="button" id="editans" value="edit answer" onClick="editAns({{ans[1].key.id()}})" >
 		{% endif %}
-		<pre>{{ ans[1].content_ }} </pre>
+		<blockquote>{{ ans[1].content_ }} </blockquote>
 		</p>
 		<p>
         		{{ ans[0] }}
@@ -88,5 +90,4 @@ function editAns(id) {
     			</p>
     		</form>
 	</div>
-</body>
-</html>
+{% endblock %}	
