@@ -1,4 +1,3 @@
-#self.response.write()
 """
 File: quora.py
 --------------------
@@ -22,6 +21,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+
 def processViewPage(qid):
     profile = question.view(qid)
 #         self.response.write(content)
@@ -36,7 +36,6 @@ def processViewPage(qid):
 class HomePage(webapp2.RequestHandler):
     def get(self):
         if users.get_current_user():
-            self.response.write("here")
             url = users.create_logout_url(self.request.uri)
             url_linktext = 'Logout'
         else:
@@ -118,39 +117,55 @@ class CreateAnswerPage(webapp2.RedirectHandler):
 
 class CreateAnswer(webapp2.RedirectHandler):
     # process /question with a post form
-    def get(self):
-        user = users.get_current_user()
+    def post(self):
+
         qid = self.request.get('qid')
-        content = self.request.get('answer')
-        aid = self.request.get('aid')
-        if aid:
-            key = ndb.Key('Answer', long(aid))
-            a = key.get()
-            a.content_ = content
-            a = a.put()
+        
+        user = users.get_current_user()
+        
+        if user:
+            aid = self.request.get('aid')
+            # if user is editing existing answer
+            if aid:
+                key = ndb.Key('Answer', long(aid))
+                a = key.get()
+                a.content_ = self.request.get('answer')
+                a.put()
+            else:
+                answer = DB.Answer()
+                answer.author_ = user
+                answer.qid_ = qid
+                answer.content_ = self.request.get('answer')
+                answer.put()
+            query_params = {'qid': qid }
+                # because google use strong-consistence, newly posted data will not be shown immediately
+
+            time.sleep(0.1) 
+            self.redirect('/view?' + urllib.urlencode(query_params))
+        #         query_params = {'qid': qid, 'oper': 'answer'}
         else:
-            a = question.create_answer(user, qid, content)
+            self.redirect(users.create_login_url(self.request.uri))
             
-        query_params = {'qid': qid }
-        # because google use strong-consistence, newly posted data will not be shown immediately
-        time.sleep(0.1) 
-        self.redirect('/view?' + urllib.urlencode(query_params))
-#         query_params = {'qid': qid, 'oper': 'answer'}
 #         self.redirect('/prompt?' + urllib.urlencode(query_params))
         
 
 class Vote(webapp2.RedirectHandler):
     def get(self):
         user = users.get_current_user()
-        vote = self.request.get('v')
-        qid = self.request.get('qid')
-        aid = self.request.get('aid')
-        if aid=='':
-            question.create_vote(user, qid, vote)
+        if user:
+            vote = self.request.get('v')
+            qid = self.request.get('qid')
+            aid = self.request.get('aid')
+            # editing or creating
+            
+            if aid=='':
+                question.create_vote(user, qid, vote)
+            else:
+                question.create_vote(user, qid, vote, aid)
+            query_params = {'qid': qid, 'oper': 'vote'}
+            self.redirect('/prompt?' + urllib.urlencode(query_params))
         else:
-            question.create_vote(user, qid, vote, aid)
-        query_params = {'qid': qid, 'oper': 'vote'}
-        self.redirect('/prompt?' + urllib.urlencode(query_params))
+            self.redirect(users.create_login_url(self.request.uri))
 
 class Prompt(webapp2.RedirectHandler):
     def get(self):
@@ -172,4 +187,5 @@ app = webapp2.WSGIApplication([
     ('/view', QuestionProfilePage),
     ('/vote', Vote),
     ('/prompt', Prompt),
+    
 ], debug=True)
