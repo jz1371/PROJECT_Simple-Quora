@@ -1,0 +1,57 @@
+header {
+  text-align: left;
+}
+
+div {
+  display: block;
+}
+
+/* css to certain type of html tag */
+input[type=text]
+{
+    height: 100px;
+    width: 300px;
+    padding-left: 10px;
+    text-decoration: none;
+    border-radius: 5px; /*up to date browsers support this, but you can add prefixes if you want*/
+    border: 0;
+}
+
+input[type=button] {
+  text-align: center;
+  padding:5px;
+  width:50px;
+}
+
+/* css to class selector */
+.container {
+  width: 980px;
+  margin:20px;
+  border:20px;
+  padding:10px;
+}
+
+.question {
+  padding:10px;
+  border-bottom: thin dotted;
+}
+
+.answer {
+  padding:10px;
+  border-bottom: thin dotted;
+}
+
+.important { 
+  color: #336699; 
+}
+
+.hidden-form {
+  display: none;
+}
+
+#user {
+  
+}
+
+
+

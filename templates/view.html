@@ -1,0 +1,88 @@
+{% extends "_base.html" %}
+{% block title %} View {% endblock %}
+{% block head %}
+{{ super() }}
+<script>
+$(document).ready(function(){
+  $("#cancel").click(function(){ // when item with id="hide" is clicked
+      $("#origin").hide();
+    });
+  $("#edit").click(function(){
+    $("#origin").show();
+  });
+});
+function editAns(id) {
+  var x = document.getElementById(id);
+  x.style.display = "block";
+}
+</script>
+{% endblock %}
+{% block user %} 
+{% if cur_user != None %} {{ cur_user }} {% endif %} <a href="{{ url|safe }}">{{ url_linktext }}</a>
+{% endblock %}
+
+  
+  
+{% block content %}
+  <div class="question">
+  <div id="tags">
+      {% for tag in question.tags_ %}
+        <span><a href='/?tag={{tag}}'> {{tag}}</a></span> 
+      {% endfor %}
+  </div>
+  {% if question.author_ == cur_user %}
+      <input type="button" id="edit" value="edit" onClick="" >
+  {% endif %}
+  <pre> {{ question.content_ }} </pre>
+  {{question.votes_ }} 
+  <input type="button" value="Up" onClick='location.href="/vote?v=up&q={{question.key.urlsafe()}}"' > 
+  <input type="button" value="Down" onClick='location.href="/vote?v=down&q={{question.key.urlsafe()}}"' > 
+
+  </div>
+   <form class="hidden-form" id="origin"  action="/post-question?q={{question.key.urlsafe()}}" method="post">
+      <p> Edit your question</p>
+      <div><textarea name="content" rows="3" cols="60">{{question.content_}}</textarea></div>
+      <input id="cancel" type="reset" value="Clear">
+      <input type="submit" value="Post it">
+  </form>
+
+ 
+  
+  <div >
+      {% for ans in answers %}
+      <div class="answer">
+        {% if ans.author_ == cur_user %}
+          <input type="button" id="editans" value="edit" onClick="editAns({{ans.key.id()}})" >
+        {% endif %}
+        <pre> {{ ans.content_ }} </pre>
+        <div>
+        {{ ans.votes_ }}
+        <input type="button" value="Up" onClick='location.href="/vote?v=up&q={{question.key.urlsafe()}}&a={{ans.key.urlsafe()}}"' > 
+        <input type="button" value="Down" onClick='location.href="/vote?v=down&q={{question.key.urlsafe()}}&a={{ans.key.urlsafe()}}"' > 
+        </div>
+      
+        <form id="{{ans.key.id()}}" class="hidden-form" action="/post-answer?q={{question.key.urlsafe()}}&a={{ans.key.urlsafe()}}" method="post">
+        <p> Edit your answer</p>
+        <div><textarea name="content" rows="3" cols="60">{{ans.content_}}</textarea></div>
+          <input id="cancel" type="reset" value="Clear">
+          <input type="submit" value="Post it">
+        </form>
+      </div>
+      {% endfor %}
+  </div>
+  
+  
+  <div >
+    <p> create your answer </p>
+<!--     <form action="/post-answer?qid={{question.key.id()}}" method="post"> -->
+    <form action="/post-answer?q={{question.key.urlsafe()}}" method="post">
+          <div><textarea name="content" id="answer" rows="3" cols="60"></textarea></div>
+          <p>
+          <!-- Simple way to clear input field -->
+          <input type="reset" value="Clear">
+          <input type="submit" value="Submit answer">
+          </p>
+    </form>
+  </div>
+  
+{% endblock %}  
