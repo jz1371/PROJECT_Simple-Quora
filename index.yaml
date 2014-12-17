@@ -24,6 +24,13 @@ indexes:
 
 - kind: Question
   properties:
+  - name: date_last_modified_
+    direction: desc
+  - name: views_
+    direction: desc
+
+- kind: Question
+  properties:
   - name: tags_
   - name: date_created_
     direction: desc
