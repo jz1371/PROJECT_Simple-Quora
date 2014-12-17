@@ -15,7 +15,7 @@
 
   <!-- questions=list[entity,..] -->
   {% for q in questions %}
-    <p><a href="/view?q={{ q.key.urlsafe() }}">{{ q.content_ }}</a></p> 
+    <p><a href="/view?q={{ q.key.urlsafe() }}">{{ q.content_ | truncate(500, True)}}</a></p> 
   {% endfor %}
   
 
