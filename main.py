@@ -9,6 +9,7 @@ import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from google.appengine.datastore.datastore_query import Cursor
+from google.appengine.api import mail
 
 import jinja2
 import webapp2
@@ -134,6 +135,27 @@ DEFAULT_QUESTION_TAG = 'default_tag'
 # =============================================================
 
 
+from google.appengine.api import mail
+def send_email(q_author, content):
+    if mail.is_email_valid(q_author.email()):
+        print "!!!!here"
+        message = mail.EmailMessage(sender="Admin <jz1371@nyu.edu>",
+                            subject="Your question receives a new answer")
+
+        message.to = "%s <%s>" % (q_author.nickname(), q_author.email())
+        message.body = """
+        Dear %s:
+
+        Your question has received a new answer:
+
+        %s
+        
+        Please let us know if you have any questions.
+
+        The Simple Quora Team
+        """ % (q_author.nickname(), content)
+        message.send()
+
 # [ START : Request Handler ]
 class MainPage(webapp2.RequestHandler):
     
@@ -235,6 +257,9 @@ class PostQuestionHandler(webapp2.RequestHandler):
         self.redirect('/view?q=' + q_key.urlsafe())
 
     
+
+
+
 class PostAnswerHandler(webapp2.RequestHandler):
     
     def post(self):
@@ -259,6 +284,7 @@ class PostAnswerHandler(webapp2.RequestHandler):
 #                     print file_upload
                         answer.image_ = file_upload.file.read() 
                 answer.put()
+                send_email(question.author_, answer.content_)
             else:
                 # editing existing answer 
                 # get this answer 
@@ -410,8 +436,7 @@ class ImageRedirectHandler(webapp2.RequestHandler):
         url = url_long[:-4]
         self.redirect('/dyimg_serve?img_id=%s' % url)
         
-        # delete
-
+        
 # ======== Main ==============
 app = webapp2.WSGIApplication([
     ('/', MainPage),
