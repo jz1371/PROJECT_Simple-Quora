@@ -15,25 +15,42 @@ function editAns(id) {
   var x = document.getElementById(id);
   x.style.display = "block";
 }
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#blah')
+                .attr('src', e.target.result)
+                .width(150)
+                .height(150);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 </script>
 {% endblock %}
 {% block user %} 
-{% if cur_user != None %} {{ cur_user }} {% endif %} <a href="{{ url|safe }}">{{ url_linktext }}</a>
+{% if cur_user != None %} {{ cur_user.nickname() }} {% endif %} <a href="{{ url|safe }}">{{ url_linktext }}</a>
 {% endblock %}
 
-  
-  
 {% block content %}
   <div class="question">
   <div id="tags">
       {% for tag in question.tags_ %}
-        <span><a href='/?tag={{tag}}'> {{tag}}</a></span> 
+        <span><a href="/?tag=urlencode_plus(tag)"> {{tag}}</a></span> 
       {% endfor %}
   </div>
   {% if question.author_ == cur_user %}
       <input type="button" id="edit" value="edit" onClick="" >
   {% endif %}
   <pre> {{ question.content_ }} </pre>
+  {% if question.image_ %}
+  <img class="show" src='/dyimg_serve?img_id={{question.key.urlsafe()}}'></img>
+  {% endif %}
+  <blockquote>
+  </blockquote>
   {{question.votes_ }} 
   <input type="button" value="Up" onClick='location.href="/vote?v=up&q={{question.key.urlsafe()}}"' > 
   <input type="button" value="Down" onClick='location.href="/vote?v=down&q={{question.key.urlsafe()}}"' > 
@@ -55,6 +72,9 @@ function editAns(id) {
           <input type="button" id="editans" value="edit" onClick="editAns({{ans.key.id()}})" >
         {% endif %}
         <pre> {{ ans.content_ }} </pre>
+        {% if ans.image_ %}
+        <img class="show" src='/dyimg_serve?img_id={{ans.key.urlsafe()}}'></img>
+        {% endif %}
         <div>
         {{ ans.votes_ }}
         <input type="button" value="Up" onClick='location.href="/vote?v=up&q={{question.key.urlsafe()}}&a={{ans.key.urlsafe()}}"' > 
@@ -74,9 +94,13 @@ function editAns(id) {
   
   <div >
     <p> create your answer </p>
-<!--     <form action="/post-answer?qid={{question.key.id()}}" method="post"> -->
-    <form action="/post-answer?q={{question.key.urlsafe()}}" method="post">
+<!--     for upload file , must have enctype="multiple-line" -->
+    <form action="/post-answer?q={{question.key.urlsafe()}}" method="post" enctype="multipart/form-data">
           <div><textarea name="content" id="answer" rows="3" cols="60"></textarea></div>
+          <p>
+          <input type='file' name="img" accept="image/*" onchange="readURL(this);" />
+          <img id="blah" src="#" alt="your image" /> 
+          </p>
           <p>
           <!-- Simple way to clear input field -->
           <input type="reset" value="Clear">

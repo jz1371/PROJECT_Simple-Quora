@@ -1,13 +1,54 @@
-{% extends "/templates/_base.html" %}
+{% extends "_base.html" %}
+{% block head %}
+{{ super() }}
+<script>
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
 
-{% block title %}
-Create an question 
-{% endblock %}
+        reader.onload = function (e) {
+            $('#blah')
+                .attr('src', e.target.result)
+                .width(200)
+                .height(200);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+</script>
+{% endblock %}}
+{% block title %} Create an question {% endblock %} 
 
 {% block content %}
-	<form action="/create-question" method="post">
-      <div><textarea name="question" rows="3" cols="60"></textarea></div>
-      <div><input type="button" value="Cancel" onClick=location.href="/"></div>
-      <div><input type="submit" value="Post this question"></div>
+  <form action="/post-question" method="post" enctype="multipart/form-data">
+      <div><textarea name="content" rows="3" cols="60"></textarea></div>
+
+      <div>
+      <p> Tags: </p>
+      <textarea name="tags" placeholder="use ; as delimiter for tags" rows="1" cols="30"></textarea>
+      </div>
+      
+      <div>
+      
+      <input type='file' name="img" accept="image/*" onchange="readURL(this);" />
+      <img id="blah" src="#" alt="your image" /> 
+      
+      <div>
+      <p>
+      <input type="button" value="Cancel" onClick=location.href="/">
+      <input type="submit" value="Post this question">
+      </p>
+      </div>
     </form>
+     <!--  <form action='/upload' method="POST" enctype="multipart/form-data">
+      <div><label>Upload image:</label></div>
+      <div><input type="file" name="img" accept="image/*" /></div>
+       <input type="submit" name="submit" value="Submit">
+      </form> -->
+      
+      
+    
+      </div>
 {% endblock %}	

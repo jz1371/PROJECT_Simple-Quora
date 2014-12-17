@@ -8,12 +8,13 @@ import urllib
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
+import mimetypes
 from google.appengine.datastore.datastore_query import Cursor
 
 import jinja2
 import webapp2
-import time
 import datetime
+import time
 
 # -------------------------------
 """
@@ -39,6 +40,7 @@ Return key:
 class Question(ndb.Model):
     author_ = ndb.UserProperty()
     content_ = ndb.StringProperty(indexed=False)
+    image_ = ndb.BlobProperty()
     votes_ = ndb.IntegerProperty()
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
     date_last_modified_ = ndb.DateTimeProperty()
@@ -49,6 +51,7 @@ class Question(ndb.Model):
 class Answer(ndb.Model):
     author_ = ndb.UserProperty()
     content_ = ndb.StringProperty(indexed=True)
+    image_ = ndb.BlobProperty()
     votes_ = ndb.IntegerProperty()
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
     date_last_modified_ = ndb.DateTimeProperty()
@@ -110,55 +113,6 @@ def post_vote(author, question, vote, answer=None):
         answer.date_last_modified_ = datetime.datetime.now()
         answer.put()
             
-            
-#     vote_qry = Vote.query(Vote.author_ == author, Vote.qid_ == qid, Vote.aid_ == aid)
-#     vote_qry = Vote.query(parent=qid.key)
-#     if vote_qry.count() == 0:
-#         # create new one
-#         v = Vote(author_ = author, qid_ = qid, aid_ = aid, vote_ = vote)
-#         v_key = v.put()
-#         if (aid == None):
-#             # update question_votes
-#             # get the question
-#             question = Question.get_by_id(long(qid), ndb.Key('uid', author.user_id()))
-#             cur_votes = question.votes_
-#             question.votes_ = (cur_votes + 1) if (vote=='up') else (cur_votes - 1)
-#             question.put()
-#         else:
-#             # update answer vote
-#             # get the answer
-#             answer = Answer.get_by_id(long(aid), ndb.Key('qid', long(qid)))
-#             cur_votes = answer.votes_
-#             answer.votes_ = (cur_votes + 1) if (vote=='up') else (cur_votes - 1)
-#             answer.put()
-#     else:
-#         # edit existing one
-#         v_key = vote_qry.get()
-#         v_key.vote_ = vote
-#         v_key.put()
-#         
-#         # update question/answer votes
-#         if (aid == None):
-#             # update question vote
-#             # get the question
-#             question = Question.get_by_id(long(qid), ndb.Key('uid', author.user_id()))
-#             # get all votes for this question
-#             vote_qry = Vote.query(Vote.qid_ == qid, Vote.aid_ == aid)
-#             q_v_up = vote_qry.filter(Vote.vote_ == 'up').count()
-#             q_v_down = vote_qry.filter(Vote.vote_ == 'down').count()
-#             question.votes_ = q_v_up - q_v_down
-#             question.put()
-#         else:
-#             # update answer vote
-#             answer = Answer.get_by_id(long(aid), ndb.Key('qid', long(qid)))
-#             # get all votes for this answer
-#             vote_qry = Vote.query(Vote.qid_ == qid, Vote.aid_ == aid)
-#             v_up = vote_qry.filter(Vote.vote_ == 'up').count()
-#             v_down = vote_qry.filter(Vote.vote_ == 'down').count()
-#             votes = v_up - v_down
-#             answer.votes_ = votes
-#             answer.put()
-#     return v_key
 
 def view(qid):
     ans_qry = Answer.query(ancestor=ndb.Key('qid', qid))
@@ -188,7 +142,8 @@ DEFAULT_QUESTION_TAG = 'default_tag'
 class MainPage(webapp2.RequestHandler):
     
     def get(self):
-        tag_name = self.request.get('tag')
+        tag_name = urllib.unquote(self.request.get('tag'))
+        print tag_name
         curs = Cursor(urlsafe=self.request.get('cursor'))
         if tag_name:
             question_qry = Question.query(Question.tags_ == tag_name).order(-Question.date_created_)
@@ -214,7 +169,7 @@ class MainPage(webapp2.RequestHandler):
             
         substitutes = {
             'questions' : questions, 
-            'tags': tags,
+            'tags': (tags),
             'url' : url,
             'url_linktext' : url_linktext,
         }
@@ -226,7 +181,8 @@ class MainPage(webapp2.RequestHandler):
 class AskQuestionHandler(webapp2.RequestHandler):
     def get(self):
         if users.get_current_user():
-            make_page(self, 'create_question.html', {})
+            
+            make_page(self, 'create_question.html', {'upload_url' :"" })
         else:
             self.redirect(users.create_login_url(self.request.uri))
             
@@ -235,7 +191,6 @@ class PostQuestionHandler(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
         q_url = self.request.get('q')
-        
         #TODO: check user
 
         # update existing one
@@ -247,6 +202,11 @@ class PostQuestionHandler(webapp2.RequestHandler):
             question = Question(parent=ndb.Key('uid', user.user_id()))
             question.author_ = user
             question.votes_ = 0
+#             file_upload = self.request.POST.get("img", None)
+            file_upload = self.request.POST.get('img', None)
+            if file_upload != None:
+                 question.image_ = file_upload.file.read()
+                 print "here"
 
             tags_str = self.request.get('tags')
             # parse tags
@@ -287,6 +247,18 @@ class PostAnswerHandler(webapp2.RequestHandler):
                 answer.votes_ = 0
                 answer.content_ = self.request.get('content')
                 answer.date_last_modified_ = datetime.datetime.now()
+
+                image = self.request.get('img')
+                file_upload = self.request.POST.get('img', None)
+                if file_upload != None:
+                    answer.image_ = file_upload.file.read()
+#                 if image:
+#                     answer.image_ = str(image)
+#                 file_upload = self.request.POST.get('img', None)
+#                 if file_upload:
+#                     print "here"
+#                     print file_upload.file.read()
+#                     answer.image_ = file_upload.file.read()
                 answer.put()
             else:
                 # editing existing answer 
@@ -319,11 +291,10 @@ class ViewHandler(webapp2.RequestHandler):
         q_url = self.request.get('q')
         q_key = ndb.Key(urlsafe=q_url)
         question = q_key.get()
-        
         # get all answers based on parent qid
         qid = question.key.id()
 #         ans_qry = Answer.query(ancestor=ndb.Key('qid', qid))
-        ans_qry = Answer.query(ancestor=q_key)
+        ans_qry = Answer.query(ancestor=q_key).order(-Answer.votes_)
         answers = ans_qry.fetch()
 #         self.response.write(answers)
         substitutes = {
@@ -370,6 +341,53 @@ class VoteHandler(webapp2.RedirectHandler):
         else:
             self.redirect(users.create_login_url(self.request.uri))
 
+
+# class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
+#   def post(self):
+#     print "!!here"
+#     upload_files = self.get_uploads('img')
+#     blob_info = upload_files[0]
+#     q = Question(parent=ndb.Key('uid', users.get_current_user().user_id()))
+#     q.author_ = users.get_current_user()
+#     q.image_ = blob_info.key()
+#     q.put()
+
+class UploadHandler(webapp2.RequestHandler):
+    def post(self):
+        img = self.request.get('img')
+        q = Question(parent=ndb.Key('uid', users.get_current_user().user_id()))
+        q.author_ = users.get_current_user()
+        q.content_ = "new question"
+        file_upload = self.request.POST.get("img", None)
+        q.image_ = file_upload.file.read()
+        q_key = q.put()
+        
+        self.response.write("upload!")
+#         self.response.write(q_key.get().image_)
+
+class DynamicImageServe(webapp2.RequestHandler):
+    def get(self):
+        url = self.request.get('img_id')
+        key = ndb.Key(urlsafe=url)
+        entity = key.get()
+#         print "vote " + str(entity.votes_)
+        if entity.image_:
+            self.response.headers['Content-Type'] = 'image/jpeg'
+            self.response.out.write(entity.image_)
+#         if greeting.avatar:
+#             self.response.headers['Content-Type'] = 'image/png'
+#             self.response.out.write(greeting.avatar)
+#         oldUser = MyUser.get_by_id(email_id)
+#         if oldUser != None and oldUser.blob != None:
+#             ##            self.response.headers['Content-Type'] = 'image/png'
+#             self.response.headers[b'Content-Type'] = mimetypes.guess_type(oldUser.file_name)[0]
+#             self.response.write(oldUser.blob)
+#         else:
+#             self.response.write('Error while fetching image data')
+ 
+class Serve(webapp2.RequestHandler):
+    def get(self):
+        print 'hree'
 # ======== Main ==============
 app = webapp2.WSGIApplication([
 #    ('/', MainPage),
@@ -379,4 +397,7 @@ app = webapp2.WSGIApplication([
     ('/post-answer', PostAnswerHandler),
     ('/view', ViewHandler),
     ('/vote', VoteHandler),
+    ('/upload', UploadHandler),
+    ('/dyimg_serve',DynamicImageServe),
+    ('/serve', Serve),
 ], debug=True)

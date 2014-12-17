@@ -6,6 +6,18 @@ div {
   display: block;
 }
 
+/* css when attribute in tag is in some state
+ * <img src="#" > when be affected
+ */
+img[src="#"] {
+   display: none;
+}
+
+img.show {
+  width: 150px;
+  height: 150px;
+}
+
 /* css to certain type of html tag */
 input[type=text]
 {
@@ -32,8 +44,8 @@ input[type=button] {
 }
 
 .question {
-  padding:10px;
-  border-bottom: thin dotted;
+  padding:20px;
+  border-bottom: thin double;
 }
 
 .answer {
