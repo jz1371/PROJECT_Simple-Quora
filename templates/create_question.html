@@ -17,10 +17,17 @@ function readURL(input) {
     }
 }
 
+function submitform(frmId)
+{
+  myFrm = document.getElementById(frmId);
+  myFrm.submit();
+}
 </script>
 {% endblock %}}
 {% block title %} Create an question {% endblock %} 
-
+{% block user %} 
+{% if cur_user != None %} {{ cur_user.email() }} {% endif %} 
+{% endblock %}
 {% block content %}
   <form action="/post-question" method="post" enctype="multipart/form-data">
       <div><textarea name="content" rows="3" cols="60"></textarea></div>
@@ -32,8 +39,8 @@ function readURL(input) {
       
       <div>
       
-      <input type='file' name="img" accept="image/*" onchange="readURL(this);" />
-      <img id="blah" src="#" alt="your image" /> 
+      <!-- <input type='file' value="upload photo" name="img" accept="image/*" onchange="readURL(this);" />
+      <img id="blah" src="#" alt="your image" />  -->
       
       <div>
       <p>
@@ -41,6 +48,13 @@ function readURL(input) {
       <input type="submit" value="Post this question">
       </p>
       </div>
+    </form>
+    <form action='/upload' id="form-photo" method="post" enctype="multipart/form-data">
+        <input type='file'  value="upload photo" name="img" accept="image/*" onchange='readURL(this);' />
+        <img id="blah" src="#" alt="your image" /> 
+        <div>
+        <input type="submit" value="upload this image">
+        </div>
     </form>
      <!--  <form action='/upload' method="POST" enctype="multipart/form-data">
       <div><label>Upload image:</label></div>

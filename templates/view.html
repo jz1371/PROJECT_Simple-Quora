@@ -32,7 +32,12 @@ function readURL(input) {
 </script>
 {% endblock %}
 {% block user %} 
-{% if cur_user != None %} {{ cur_user.nickname() }} {% endif %} <a href="{{ url|safe }}">{{ url_linktext }}</a>
+{% if admin %}
+<p> Welcome admin user, you can delete any question and answer </p>
+{% endif %}
+
+
+{% if cur_user != None %} {{ cur_user.email() }} {% endif %} <a href="{{ url|safe }}">{{ url_linktext }}</a>
 {% endblock %}
 
 {% block content %}
@@ -49,7 +54,7 @@ function readURL(input) {
       <input type="button" id="edit" value="edit" onClick="" >
   {% endif %}
   {% if admin %}
-      <input type="button" id="delete" value="delete" onClick="/delete?q={{q_url}}" >
+      <input type="button" id="delete" value="delete" onClick='location.href="/delete?p={{q_url}}"' >
   {% endif %}
   <pre data-linkify="this"> {{ question.content_ }} </pre>
   {% if question.image_ %}
@@ -80,6 +85,9 @@ function readURL(input) {
       <div class="answer">
         {% if ans.author_ == cur_user %}
           <input type="button" id="editans" value="edit" onClick="editAns({{ans.key.id()}})" >
+        {% endif %}
+        {% if admin %}
+          <input type="button" id="delete" value="delete" onClick='location.href="/delete?p={{ans.key.urlsafe()}}"'>
         {% endif %}
         <pre data-linkify="this" > {{ ans.content_ }} </pre>
         {% if ans.image_ %}

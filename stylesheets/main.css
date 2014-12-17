@@ -75,6 +75,20 @@ input[type=button] {
   display: none;
 }
 
+#parent {
+    overflow: hidden;
+}
+#parent .right {
+    float:  left;
+    height: 30px;
+    width:50px;
+}
+#parent .left {
+    float:left;
+    overflow: hidden;
+    height: 30px;
+    width:auto;
+}
 
 
 

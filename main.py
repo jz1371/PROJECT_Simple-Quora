@@ -8,7 +8,6 @@ import urllib
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
-import mimetypes
 from google.appengine.datastore.datastore_query import Cursor
 
 import jinja2
@@ -41,7 +40,7 @@ class Question(ndb.Model):
     author_ = ndb.UserProperty()
     content_ = ndb.StringProperty(indexed=False)
     image_ = ndb.BlobProperty()
-    votes_ = ndb.IntegerProperty()
+    votes_ = ndb.IntegerProperty(indexed=True)
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
     date_last_modified_ = ndb.DateTimeProperty()
     tags_ = ndb.StringProperty(repeated=True)
@@ -50,9 +49,9 @@ class Question(ndb.Model):
 # i.e. Answer has Question as parent
 class Answer(ndb.Model):
     author_ = ndb.UserProperty()
-    content_ = ndb.StringProperty(indexed=True)
+    content_ = ndb.StringProperty(indexed=False)
     image_ = ndb.BlobProperty()
-    votes_ = ndb.IntegerProperty()
+    votes_ = ndb.IntegerProperty(indexed=True)
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
     date_last_modified_ = ndb.DateTimeProperty()
     
@@ -180,6 +179,7 @@ class MainPage(webapp2.RequestHandler):
         substitutes = {
             'questions' : questions, 
             'tags': (tags),
+            'cur_user': users.get_current_user(),
             'url' : url,
             'url_linktext' : url_linktext,
         }
@@ -191,10 +191,14 @@ class MainPage(webapp2.RequestHandler):
 class AskQuestionHandler(webapp2.RequestHandler):
     def get(self):
         if users.get_current_user():
-            
-            make_page(self, 'create_question.html', {'upload_url' :"" })
+            substitutes = {
+                   'upload_url' :"", 
+                   'cur_user': users.get_current_user(),
+                   }
+            make_page(self, 'create_question.html', substitutes)
         else:
             self.redirect(users.create_login_url(self.request.uri))
+        
             
     
 class PostQuestionHandler(webapp2.RequestHandler):
@@ -393,9 +397,12 @@ class RssFeedHandler(webapp2.RequestHandler):
 
 class DeleteHandler(webapp2.RequestHandler):
     def get(self):
-        q_url = self.request.get('q')
-        q_key = ndb.Key(urlsafe=q_url)
-        question = q_key.get()
+        url = self.request.get('p')
+        key = ndb.Key(urlsafe=url)
+        key.delete()
+        time.sleep(0.1)
+        self.redirect('/')
+
     
 class ShowImageHandler(webapp2.RequestHandler):
     def get(self):

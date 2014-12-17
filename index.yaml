@@ -27,3 +27,9 @@ indexes:
   - name: tags_
   - name: date_created_
     direction: desc
+
+- kind: Question
+  properties:
+  - name: tags_
+  - name: date_last_modified_
+    direction: desc

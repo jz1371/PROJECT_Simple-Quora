@@ -1,0 +1,11 @@
+{% extends "_base.html" %}
+{% block title %} Homepage {% endblock %}
+{% block content %}
+  {% for img in images %}
+      <div>
+      <img class="show" src='/dyimg_serve?img_id={{img.key.urlsafe()}}'></img>
+      <a href="/images?img_id={{img.key.urlsafe()}}.jpg" > permlink </a>
+      </div>
+  {% endfor %}
+
+{% endblock %}
