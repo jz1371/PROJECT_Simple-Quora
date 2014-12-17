@@ -67,6 +67,11 @@ class Tag(ndb.Model):
     tag_ = ndb.StringProperty()
     count_ = ndb.IntegerProperty()
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
+    
+class Image(ndb.Model):
+    author_ = ndb.UserProperty()
+    image_ = ndb.BlobProperty()
+    link_ = ndb.StringProperty()
 #[ END : DATABASE CLASS ]
 
 
@@ -212,7 +217,6 @@ class PostQuestionHandler(webapp2.RequestHandler):
                 file_upload = self.request.POST.get('img', None)
                 if file_upload != None: 
                     question.image_ = file_upload.file.read()
-                    print "here"
 
             tags_str = self.request.get('tags')
             # parse tags
@@ -330,10 +334,6 @@ class VoteHandler(webapp2.RedirectHandler):
 
             q_key = Question.query(ancestor=ndb.Key('uid', user.user_id())).get()
             self.redirect('/view?q=' + question.key.urlsafe())
-            #
-
-
-
 #                 create_vote(user, qid, vote, aid)
 #             self.response.write(qid)
 #             q = Question.get_by_id(long(qid), ndb.Key('uid', user.user_id()))
@@ -342,28 +342,18 @@ class VoteHandler(webapp2.RedirectHandler):
         else:
             self.redirect(users.create_login_url(self.request.uri))
 
-
-# class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
-#   def post(self):
-#     print "!!here"
-#     upload_files = self.get_uploads('img')
-#     blob_info = upload_files[0]
-#     q = Question(parent=ndb.Key('uid', users.get_current_user().user_id()))
-#     q.author_ = users.get_current_user()
-#     q.image_ = blob_info.key()
-#     q.put()
-
 class UploadHandler(webapp2.RequestHandler):
     def post(self):
-        img = self.request.get('img')
-        q = Question(parent=ndb.Key('uid', users.get_current_user().user_id()))
-        q.author_ = users.get_current_user()
-        q.content_ = "new question"
-        file_upload = self.request.POST.get("img", None)
-        q.image_ = file_upload.file.read()
-        q_key = q.put()
+        if self.request.get('img'):
+            file_upload = self.request.POST.get('img', None)
+            if file_upload != None and file_upload.file != None:
+                img = Image(parent=ndb.Key('uid', users.get_current_user().user_id()))
+                img.image_ = file_upload.file.read()
+                img.author_ = users.get_current_user()
+                img_key = img.put()
+                self.redirect("/")
+                
         
-        self.response.write("upload!")
 #         self.response.write(q_key.get().image_)
 
 class DynamicImageServe(webapp2.RequestHandler):
@@ -398,6 +388,7 @@ class RssFeedHandler(webapp2.RequestHandler):
                            'answers' : answers,
                            }
 
+            self.response.headers['Content-Type'] = 'text/xml'
             make_page(self, 'feed.xml', substitutes)
 
 class DeleteHandler(webapp2.RequestHandler):
@@ -405,6 +396,18 @@ class DeleteHandler(webapp2.RequestHandler):
         q_url = self.request.get('q')
         q_key = ndb.Key(urlsafe=q_url)
         question = q_key.get()
+    
+class ShowImageHandler(webapp2.RequestHandler):
+    def get(self):
+        images = Image.query().fetch(limit=None)
+        substitutes = {"images": images}
+        make_page(self, 'image.html', substitutes)
+        
+class ImageRedirectHandler(webapp2.RequestHandler):
+    def get(self):
+        url_long = self.request.get('img_id')
+        url = url_long[:-4]
+        self.redirect('/dyimg_serve?img_id=%s' % url)
         
         # delete
 
@@ -420,4 +423,6 @@ app = webapp2.WSGIApplication([
     ('/dyimg_serve',DynamicImageServe),
     ('/rss', RssFeedHandler),
     ('/delete', DeleteHandler),
+    ('/images', ImageRedirectHandler),
+    ('/showimage', ShowImageHandler),
 ], debug=True)

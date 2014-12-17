@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+<title>{{ question.votes_ }}</title>
+<description> {{ question.content_ | safe }} </description>
+<link> '/view?q={{question.key.urlsafe() | safe }}' </link>
+{% for ans in answers %}
+<item>
+  <title>
+  vote: {{ ans.votes_ }}
+  </title>
+  <description>
+  {{ ans.content_ }}
+  </description>
+</item>
+{% endfor %}
+
+</channel>
+</rss>
