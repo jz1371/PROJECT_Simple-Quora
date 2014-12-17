@@ -6,6 +6,14 @@ div {
   display: block;
 }
 
+/* css to h6 within class .timestamp */
+.timestamp{
+  padding: 10px;
+}
+.timestamp label{
+  color:red;
+}
+
 /* css when attribute in tag is in some state
  * <img src="#" > when be affected
  */

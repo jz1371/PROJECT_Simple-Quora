@@ -91,7 +91,7 @@ def post_vote(author, question, vote, answer=None):
         q_v_up = q_vote_qry.filter(Vote.vote_ == 'up').count()
         q_v_down = q_vote_qry.filter(Vote.vote_ == 'down').count()
         question.votes_ = q_v_up - q_v_down
-        question.date_last_modified_ = datetime.datetime.now()
+#         question.date_last_modified_ = datetime.datetime.now()
         question.put()
         
     else:
@@ -110,7 +110,7 @@ def post_vote(author, question, vote, answer=None):
         a_v_up = a_vote_qry.filter(Vote.vote_ == 'up').count()
         a_v_down = a_vote_qry.filter(Vote.vote_ == 'down').count()
         answer.votes_ = a_v_up - a_v_down
-        answer.date_last_modified_ = datetime.datetime.now()
+#         answer.date_last_modified_ = datetime.datetime.now()
         answer.put()
             
 
