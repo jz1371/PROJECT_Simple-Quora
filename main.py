@@ -177,9 +177,9 @@ class MainPage(webapp2.RequestHandler):
         print tag_name
         curs = Cursor(urlsafe=self.request.get('cursor'))
         if tag_name:
-            question_qry = Question.query(Question.tags_ == tag_name).order(-Question.views_, -Question.date_last_modified_)
+            question_qry = Question.query(Question.tags_ == tag_name).order( -Question.date_last_modified_)
         else:
-            question_qry = Question.query().order(-Question.views_, -Question.date_last_modified_)
+            question_qry = Question.query().order(-Question.date_last_modified_)
         questions, next_curs, more = question_qry.fetch_page(
             10, start_cursor=curs)
         if more and next_curs:

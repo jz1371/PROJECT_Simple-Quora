@@ -17,21 +17,17 @@ import question
 import time
 
 JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    loader=jinja2.FileSystemLoader( \
+        os.path.join(os.path.dirname(__file__), 'templates')),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
 
-def processViewPage(qid):
-    profile = question.view(qid)
-#         self.response.write(content)
-    template_values = {
-        'qid': qid,
-        'q_content': profile['question'][0],
-        'q_vote': profile['question'][1],
-        'answers': profile['answer'],
-    }
-    return template_values 
+def make_page(handler, template, substitutes = {}):
+
+    template = JINJA_ENVIRONMENT.get_template(template)
+    handler.response.write(template.render(substitutes))
+
 
 class HomePage(webapp2.RequestHandler):
     def get(self):
@@ -42,27 +38,29 @@ class HomePage(webapp2.RequestHandler):
             url = users.create_login_url(self.request.uri)
             url_linktext = 'Login use Google account'
         
-        question_keys = question.list_all()
+        tag =  self.request.get('tag') 
+        question_keys, tags = question.list_all(tag)
 
         template_values = {
             'version:': 'v1.0',
             'url': url,
             'url_linktext': url_linktext,
             'question_keys': question_keys,
+            'tags': tags,
         }
-        template = JINJA_ENVIRONMENT.get_template('/templates/home.html')
-        self.response.write(template.render(template_values))
+        template = JINJA_ENVIRONMENT.get_template('home.html')
+#         self.response.write(template.render(template_values))
+        self.response.write(question_keys[0].urlsafe())
 # [END home_page]
 
 class CreateQuestionPage(webapp2.RedirectHandler):
     def get(self):
         if users.get_current_user():
             self.response.write(users.get_current_user().nickname() + " is writing question")
-            template = JINJA_ENVIRONMENT.get_template('/templates/create_question.html')
+            template = JINJA_ENVIRONMENT.get_template('create_question.html')
             self.response.write(template.render())
         else:
             self.redirect(users.create_login_url(self.request.uri))
-
 
 class CreateQuestion(webapp2.RedirectHandler):
     # process /question with a post form
@@ -70,19 +68,13 @@ class CreateQuestion(webapp2.RedirectHandler):
         user = users.get_current_user()
         content = self.request.get('question')
         qid = self.request.get("qid")
-        if qid:
-            # update existing one
-            key = ndb.Key('Question', long(qid))
-            q = key.get()
-            q.content_ = content
-            q = q.put()
-        else:
-            # create a new one
-            q = question.create_question(user, content)
-#         self.response.write(q)
-            
-        # PS1. How to redirect and then handle by handler
+        tags = self.request.get('tags')
+
+        q = question.create_question(qid,  user, content)
+        question.add_tag(q.id(), tags)
+        
         query_params =  {'qid': q.id()}
+        time.sleep(0.1) 
         self.redirect('/view?' + urllib.urlencode(query_params))
         
 
@@ -92,24 +84,24 @@ class QuestionProfilePage(webapp2.RedirectHandler):
         qid = urllib.unquote(self.request.get('qid'))
         profile = question.view(qid)
         user = users.get_current_user()
-        is_author = (user and user == profile['question'][2])
+        is_author = (user and user == profile['question']['author'])
         template_values = {
             'is_author': is_author,
             'cur_user': user,
             'qid': qid,
-            'q_content': profile['question'][0],
-            'q_vote': profile['question'][1],
+            'q_content': profile['question']['content'],
+            'q_vote': profile['question']['votes'],
+            'q_tag': profile['tag'],
             'answers': profile['answer'],
         }
-        template = JINJA_ENVIRONMENT.get_template('/templates/view_question.html')
-#         self.response.write(is_author)
+        template = JINJA_ENVIRONMENT.get_template('view_question.html')
         self.response.write(template.render(template_values))
 
 class CreateAnswerPage(webapp2.RedirectHandler):
     def get(self):
         if users.get_current_user():
             self.response.write(users.get_current_user().nickname() + " is answering a question")
-            template = JINJA_ENVIRONMENT.get_template('/templates/create_answer.html')
+            template = JINJA_ENVIRONMENT.get_template('create_answer.html')
             template_values = {'qid': self.request.get('qid')}
             self.response.write(template.render(template_values))
         else:
@@ -171,16 +163,19 @@ class Prompt(webapp2.RedirectHandler):
         qid = self.request.get('qid')
         oper = self.request.get('oper')
         template_values = {'operation': oper, 'qid' : qid}
-        template = JINJA_ENVIRONMENT.get_template('/templates/prompt_result.html')
+        template = JINJA_ENVIRONMENT.get_template('prompt_result.html')
         self.response.write(template.render(template_values))
 
 class Test(webapp2.RedirectHandler):
     def get(self):
         template_values = {}
-        template = JINJA_ENVIRONMENT.get_template('/templates/test.html')
+        template = JINJA_ENVIRONMENT.get_template('test.html')
         self.response.write(template.render(template_values))
 
-
+class Tag(webapp2.RedirectHandler):
+    def get(self):
+        return 
+        
         
 # ==== Main =====
 app = webapp2.WSGIApplication([
@@ -194,5 +189,5 @@ app = webapp2.WSGIApplication([
     ('/vote', Vote),
     ('/prompt', Prompt),
     ('/test', Test),
-    
+    ('tag', Tag),
 ], debug=True)

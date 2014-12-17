@@ -1,2 +1,6 @@
+.gitignore
 *.pyc
 *.swp
+.project
+.pydevproject
+.setting*
