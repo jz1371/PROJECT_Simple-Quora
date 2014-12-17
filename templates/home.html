@@ -1,23 +1,23 @@
-<!DOCTYPE html>
-{% autoescape true %}
-<html>
-<head>
-	<title>Home page</title>
-	<meta charset="utf-8" />
-</head>
-<body>
-	<header>Welcome to this simple quora.</header>
-		{% for key in question_keys %}
-			<p>
-			<a href="/view?qid={{key.id()}}">{{key.get().content_}}</a>
-			</p>
-    		{% endfor %}
-	
-		<a href="/ask"> Create a question</a>
-	
-	<footer>
-		<a href="{{ url|safe }}">{{ url_linktext }}</a>
-	</footer>
-</body>
-</html>
-{% endautoescape %}
+{% extends "_base.html" %}
+
+{% block title %} Create an question {% endblock %}
+{% block content %}
+
+   <div id="tags">
+      Tags:
+      {% for tag in tags %}
+         <span><a href='/?tag={{tag.tag_ | safe}}'> {{tag.tag_}}</a></span> 
+      {% endfor %}
+  </div>
+  <div>
+  <a href="/ask"> Ask Question </a>
+  </div>
+
+  <!-- questions=list[entity,..] -->
+  {% for q in questions %}
+    <p><a href="/view?q={{ q.key.urlsafe() }}">{{ q.content_ }}</a></p> 
+  {% endfor %}
+  
+
+  <a href="{{ url|safe }}">{{ url_linktext }}</a>
+{% endblock %}

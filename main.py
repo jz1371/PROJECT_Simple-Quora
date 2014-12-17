@@ -142,19 +142,24 @@ DEFAULT_QUESTION_TAG = 'default_tag'
 class MainPage(webapp2.RequestHandler):
     
     def get(self):
+        cursor = self.request.get('cursor')
+        if cursor:
+            print "here" 
         tag_name = urllib.unquote(self.request.get('tag'))
         print tag_name
         curs = Cursor(urlsafe=self.request.get('cursor'))
         if tag_name:
-            question_qry = Question.query(Question.tags_ == tag_name).order(-Question.date_created_)
+            question_qry = Question.query(Question.tags_ == tag_name).order(-Question.date_last_modified_)
         else:
-            question_qry = Question.query().order(-Question.date_created_)
+            question_qry = Question.query().order(-Question.date_last_modified_)
 #         questions = question_qry.fetch()
 #         self.response.write(questions[0].key.urlsafe())
         questions, next_curs, more = question_qry.fetch_page(
 #             10, start_cursor=curs, keys_only=True)
             10, start_cursor=curs)
-        
+        if more and next_curs:
+            self.response.out.write('<a href="/?cursor=%s"> >> More Questions >> </a>' %
+                              next_curs.urlsafe()) 
 #         if more and next_curs:
 #             self.response.out.write('<a href="/list?cursor=%s">More...</a>' %
 #                               next_curs.urlsafe())
@@ -203,10 +208,11 @@ class PostQuestionHandler(webapp2.RequestHandler):
             question.author_ = user
             question.votes_ = 0
 #             file_upload = self.request.POST.get("img", None)
-            file_upload = self.request.POST.get('img', None)
-            if file_upload != None:
-                 question.image_ = file_upload.file.read()
-                 print "here"
+            if self.request.get('img'):
+                file_upload = self.request.POST.get('img', None)
+                if file_upload != None: 
+                    question.image_ = file_upload.file.read()
+                    print "here"
 
             tags_str = self.request.get('tags')
             # parse tags
@@ -248,17 +254,11 @@ class PostAnswerHandler(webapp2.RequestHandler):
                 answer.content_ = self.request.get('content')
                 answer.date_last_modified_ = datetime.datetime.now()
 
-                image = self.request.get('img')
-                file_upload = self.request.POST.get('img', None)
-                if file_upload != None:
-                    answer.image_ = file_upload.file.read()
-#                 if image:
-#                     answer.image_ = str(image)
-#                 file_upload = self.request.POST.get('img', None)
-#                 if file_upload:
-#                     print "here"
-#                     print file_upload.file.read()
-#                     answer.image_ = file_upload.file.read()
+                if self.request.get('img'):
+                    file_upload = self.request.POST.get('img', None)
+                    if file_upload != None and file_upload.file != None:
+#                     print file_upload
+                        answer.image_ = file_upload.file.read() 
                 answer.put()
             else:
                 # editing existing answer 
@@ -299,6 +299,7 @@ class ViewHandler(webapp2.RequestHandler):
 #         self.response.write(answers)
         substitutes = {
             'cur_user': users.get_current_user(),
+            'admin': users.is_current_user_admin(),
             'question' : question, 
             'answers': answers,
             'url' : url,
@@ -370,7 +371,6 @@ class DynamicImageServe(webapp2.RequestHandler):
         url = self.request.get('img_id')
         key = ndb.Key(urlsafe=url)
         entity = key.get()
-#         print "vote " + str(entity.votes_)
         if entity.image_:
             self.response.headers['Content-Type'] = 'image/jpeg'
             self.response.out.write(entity.image_)
@@ -385,12 +385,31 @@ class DynamicImageServe(webapp2.RequestHandler):
 #         else:
 #             self.response.write('Error while fetching image data')
  
-class Serve(webapp2.RequestHandler):
+class RssFeedHandler(webapp2.RequestHandler):
     def get(self):
-        print 'hree'
+        q_url = self.request.get('q')
+        q_key = ndb.Key(urlsafe=q_url)
+        question = q_key.get()
+        if question:
+            answers = Answer.query(ancestor=q_key).order(-Answer.votes_).fetch()
+            
+            substitutes = {
+                           'question' : question,
+                           'answers' : answers,
+                           }
+
+            make_page(self, 'feed.xml', substitutes)
+
+class DeleteHandler(webapp2.RequestHandler):
+    def get(self):
+        q_url = self.request.get('q')
+        q_key = ndb.Key(urlsafe=q_url)
+        question = q_key.get()
+        
+        # delete
+
 # ======== Main ==============
 app = webapp2.WSGIApplication([
-#    ('/', MainPage),
     ('/', MainPage),
     ('/ask', AskQuestionHandler),
     ('/post-question', PostQuestionHandler),
@@ -399,5 +418,6 @@ app = webapp2.WSGIApplication([
     ('/vote', VoteHandler),
     ('/upload', UploadHandler),
     ('/dyimg_serve',DynamicImageServe),
-    ('/serve', Serve),
+    ('/rss', RssFeedHandler),
+    ('/delete', DeleteHandler),
 ], debug=True)

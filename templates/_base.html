@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-	<style type="text/css">
-        .important { color: #336699; }
-     </style>
-	<meta charset="UTF-8">
-	<p class="important">
-    		Welcome on my simple quora.
-    	</p>
-    {% block head %}
-    <!-- <link rel="stylesheet" href="style.css" /> -->
-    <title>{% block title %}{% endblock %} - My Webpage</title>
-    {% endblock %}
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="/js/jquery.linkify.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+  {% block head %}
+  <title>{% block title %}{% endblock %} - My Webpage</title>
+  {% endblock %}
 </head>
 
+<header>
+  <h4 class="important"> Welcome to my simple quora. </h4>
+  <div id="user"> {% block user %} {% endblock %} </div>
+</header>
+
 <body>
-    <div id="content">
-    		{% block content %}{% endblock %}
-    </div>
+  <div class="container">
+  {% block content %}{% endblock %}
+  </div>
 </body>
 
 <footer>
-	
-	<a href="/"> Home </a>
-	<p> &copy; Copyright 2014 by Jingxin. </p>
+<div>
+  <a href="/"> Home </a> </p>
+  <p> &copy; Copyright 2014 by Jingxin. </p>
+</div>
 </footer>

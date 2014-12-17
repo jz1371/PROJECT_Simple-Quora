@@ -1,4 +1,4 @@
-{% extends "/templates/_base.html" %}
+{% extends "_base.html" %}
 
 {% block title %}
 Create an answer
@@ -10,5 +10,5 @@ Create an answer
             <div><input type="hidden" name="qid" value="{{ qid }}"> </div>
             <div><input type="button" value="Cancel" onClick=location.href="/"></div>
             <div><input type="submit" value="Submit answer"></div>
-    		</form>
+        </form>
 {% endblock %}	

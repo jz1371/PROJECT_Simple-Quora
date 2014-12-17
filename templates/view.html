@@ -36,6 +36,9 @@ function readURL(input) {
 {% endblock %}
 
 {% block content %}
+   {% set q_url = question.key.urlsafe() %}
+  <a target="_blank" href="/rss?q={{q_url}}">
+  <img id="rss" src="/images/rss.jpg"></a>
   <div class="question">
   <div id="tags">
       {% for tag in question.tags_ %}
@@ -45,7 +48,10 @@ function readURL(input) {
   {% if question.author_ == cur_user %}
       <input type="button" id="edit" value="edit" onClick="" >
   {% endif %}
-  <pre> {{ question.content_ }} </pre>
+  {% if admin %}
+      <input type="button" id="delete" value="delete" onClick="/delete?q={{q_url}}" >
+  {% endif %}
+  <pre data-linkify="this"> {{ question.content_ }} </pre>
   {% if question.image_ %}
   <img class="show" src='/dyimg_serve?img_id={{question.key.urlsafe()}}'></img>
   {% endif %}
@@ -66,12 +72,13 @@ function readURL(input) {
  
   
   <div >
+      <img src="http://38.media.tumblr.com/3c78a9f1445f5d05e7078c31d58f3976/tumblr_movej2Tds41qcn97oo1_400.gif" >
       {% for ans in answers %}
       <div class="answer">
         {% if ans.author_ == cur_user %}
           <input type="button" id="editans" value="edit" onClick="editAns({{ans.key.id()}})" >
         {% endif %}
-        <pre> {{ ans.content_ }} </pre>
+        <pre data-linkify="this" > {{ ans.content_ }} </pre>
         {% if ans.image_ %}
         <img class="show" src='/dyimg_serve?img_id={{ans.key.urlsafe()}}'></img>
         {% endif %}

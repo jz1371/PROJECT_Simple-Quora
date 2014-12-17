@@ -18,6 +18,12 @@ img.show {
   height: 150px;
 }
 
+/* css on id in html tag */
+img#rss {
+  width: 30px;
+  height: 30px;
+}
+
 /* css to certain type of html tag */
 input[type=text]
 {
@@ -61,9 +67,7 @@ input[type=button] {
   display: none;
 }
 
-#user {
-  
-}
+
 
 
 

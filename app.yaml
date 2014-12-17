@@ -5,8 +5,19 @@ api_version: 1
 threadsafe: yes
 
 handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
+# add local external js library
+- url: /js
+  static_dir: js
+  
+- url: /images
+  static_dir: images
+  
 - url: /.*
-  script: quora.app
+  script: main.app
+#  script: quora.app
 
 # [START libraries]
 libraries:
