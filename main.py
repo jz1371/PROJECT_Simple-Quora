@@ -5,6 +5,7 @@ Last Update: 12/12/14
 """
 import os
 import urllib
+import re
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -134,11 +135,8 @@ def make_page(handler, template_file, substitutes):
 DEFAULT_QUESTION_TAG = 'default_tag'
 # =============================================================
 
-
-from google.appengine.api import mail
 def send_email(q_author, content):
     if mail.is_email_valid(q_author.email()):
-        print "!!!!here"
         message = mail.EmailMessage(sender="Admin <jz1371@nyu.edu>",
                             subject="Your question receives a new answer")
 
@@ -155,6 +153,18 @@ def send_email(q_author, content):
         The Simple Quora Team
         """ % (q_author.nickname(), content)
         message.send()
+# http://www.google.com is here
+
+def detect_link(content):
+    def replink(m):
+        if m.group().endswith('.jpg') or m.group().endswith('.png') or m.group().endswith('.gif'):
+            return  '<img src="'  + m.group() + '">'
+        elif m.group().startswith('http://quora-jz1371.appspot.com/dyimg_serve?img_id') :
+            return '<img src="' + m.group() + '">'
+        else:
+            return '<a href="' + m.group(1) + '">' + m.group(2) + '</a >'
+    return re.sub(r'(https?://([^ ,;\n]*))', replink, content)
+
 
 # [ START : Request Handler ]
 class MainPage(webapp2.RequestHandler):
@@ -167,21 +177,14 @@ class MainPage(webapp2.RequestHandler):
         print tag_name
         curs = Cursor(urlsafe=self.request.get('cursor'))
         if tag_name:
-            question_qry = Question.query(Question.tags_ == tag_name).order(-Question.date_last_modified_)
+            question_qry = Question.query(Question.tags_ == tag_name).order(-Question.views_, -Question.date_last_modified_)
         else:
-            question_qry = Question.query().order(-Question.date_last_modified_)
-#         questions = question_qry.fetch()
-#         self.response.write(questions[0].key.urlsafe())
+            question_qry = Question.query().order(-Question.views_, -Question.date_last_modified_)
         questions, next_curs, more = question_qry.fetch_page(
-#             10, start_cursor=curs, keys_only=True)
             10, start_cursor=curs)
         if more and next_curs:
             self.response.out.write('<a href="/?cursor=%s"> >> More Questions >> </a>' %
                               next_curs.urlsafe()) 
-#         if more and next_curs:
-#             self.response.out.write('<a href="/list?cursor=%s">More...</a>' %
-#                               next_curs.urlsafe())
-        
         tags = Tag.query().order(-Tag.count_).fetch()
         if users.get_current_user():
             url = users.create_logout_url(self.request.uri)
@@ -197,10 +200,7 @@ class MainPage(webapp2.RequestHandler):
             'url' : url,
             'url_linktext' : url_linktext,
         }
-#         self.response.write(questions)
         make_page(self, 'home.html', substitutes)
-#         template = JINJA_ENVIRONMENT.get_template('home.html')
-#         self.response.write(template.render(template_values))
 
 class AskQuestionHandler(webapp2.RequestHandler):
     def get(self):
@@ -213,7 +213,6 @@ class AskQuestionHandler(webapp2.RequestHandler):
         else:
             self.redirect(users.create_login_url(self.request.uri))
         
-            
     
 class PostQuestionHandler(webapp2.RequestHandler):
     def post(self):
@@ -250,8 +249,7 @@ class PostQuestionHandler(webapp2.RequestHandler):
                     tag = qry.get()
                     tag.count_ += 1
                     tag.put()
-        
-        question.content_ = self.request.get('content')
+        question.content_ = detect_link(self.request.get('content'))
         question.date_last_modified_ = datetime.datetime.now()
         q_key = question.put()
         self.redirect('/view?q=' + q_key.urlsafe())
@@ -275,7 +273,7 @@ class PostAnswerHandler(webapp2.RequestHandler):
                 #             answer = Answer(parent=ndb.Key('qid', question.key.id()))
                 answer.author_ = user
                 answer.votes_ = 0
-                answer.content_ = self.request.get('content')
+                answer.content_ = detect_link(self.request.get('content'))
                 answer.date_last_modified_ = datetime.datetime.now()
 
                 if self.request.get('img'):
@@ -295,7 +293,7 @@ class PostAnswerHandler(webapp2.RequestHandler):
                     self.response.write("no such answer")
                 else:
                     # update answer
-                    answer.content_ = self.request.get('content')
+                    answer.content_ = detect_link(self.request.get('content'))
                     answer.date_last_modified_ = datetime.datetime.now()
                     answer.put()
         else:
@@ -436,6 +434,11 @@ class ImageRedirectHandler(webapp2.RequestHandler):
         url = url_long[:-4]
         self.redirect('/dyimg_serve?img_id=%s' % url)
         
+class UploadPageHandler(webapp2.RequestHandler):
+    def get(self):
+        images = Image.query().fetch(limit=None)
+        substitutes = {"images": images}
+        make_page(self, 'image.html', substitutes)
         
 # ======== Main ==============
 app = webapp2.WSGIApplication([
@@ -446,6 +449,7 @@ app = webapp2.WSGIApplication([
     ('/view', ViewHandler),
     ('/vote', VoteHandler),
     ('/upload', UploadHandler),
+    ('/uploadpage', UploadPageHandler),
     ('/dyimg_serve',DynamicImageServe),
     ('/rss', RssFeedHandler),
     ('/delete', DeleteHandler),

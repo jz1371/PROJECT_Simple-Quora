@@ -56,7 +56,8 @@ function readURL(input) {
   {% if admin %}
       <input type="button" id="delete" value="delete" onClick='location.href="/delete?p={{q_url}}"' >
   {% endif %}
-  <pre data-linkify="this"> {{ question.content_ }} </pre>
+<!--   <pre data-linkify="this"> {{ question.content_ }} </pre> -->
+  <pre > {{ question.content_ | safe}} </pre>
   {% if question.image_ %}
   <img class="show" src='/dyimg_serve?img_id={{question.key.urlsafe()}}'></img>
   {% endif %}
@@ -73,7 +74,7 @@ function readURL(input) {
   </div>
    <form class="hidden-form" id="origin"  action="/post-question?q={{question.key.urlsafe()}}" method="post">
       <p> Edit your question</p>
-      <div><textarea name="content" rows="3" cols="60">{{question.content_}}</textarea></div>
+      <div><textarea name="content" rows="3" cols="60">{{question.content_ }}</textarea></div>
       <input id="cancel" type="reset" value="Clear">
       <input type="submit" value="Post it">
   </form>
@@ -90,7 +91,7 @@ function readURL(input) {
         {% if admin %}
           <input type="button" id="delete" value="delete" onClick='location.href="/delete?p={{ans.key.urlsafe()}}"'>
         {% endif %}
-        <pre data-linkify="this" > {{ ans.content_ }} </pre>
+        <pre > {{ ans.content_ | safe}} </pre>
         {% if ans.image_ %}
         <img class="show" src='/dyimg_serve?img_id={{ans.key.urlsafe()}}'></img>
         {% endif %}

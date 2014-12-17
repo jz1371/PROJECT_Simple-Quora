@@ -38,18 +38,13 @@ function readURL(input) {
   
   </div>
   <div >
-  
-    <form action='/upload' id="form-photo" method="post" enctype="multipart/form-data">
-        <input type='file'  value="upload photo" name="img" accept="image/*" onchange='readURL(this);' />
-        <img id="blah" src="#" alt="your image" /> 
-        <div>
-        <input type="submit" value="upload this image">
-        </div>
-    </form>
+    <a class="function" href="/uploadpage" > upload image or see uploaded images</a>
+    
   </div>
+  <p></p>
+  <p></p>
   <div>
-  <a href="/showimage" >show uploaded image</a>
-  <a href="/ask"> Ask Question </a>
+  <a class="function" href="/ask"> Ask Question </a>
   </div>
   <div>
   <!-- questions=list[entity,..] -->

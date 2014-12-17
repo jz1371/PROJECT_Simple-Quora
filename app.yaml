@@ -1,4 +1,5 @@
-application: quora-jz1371 # project-id on google engine
+# project-id on google engine
+application: quora-jz1371 
 version: 1
 runtime: python27
 api_version: 1

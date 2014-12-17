@@ -26,6 +26,10 @@ img.show {
   height: 150px;
 }
 
+a.function{
+  padding: 10px;
+}
+
 /* css on id in html tag */
 img#rss {
   width: 30px;

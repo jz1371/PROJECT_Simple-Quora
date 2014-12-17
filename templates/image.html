@@ -1,6 +1,13 @@
 {% extends "_base.html" %}
 {% block title %} Homepage {% endblock %}
 {% block content %}
+  <form action='/upload' id="form-photo" method="post" enctype="multipart/form-data">
+        <input type='file'  value="upload photo" name="img" accept="image/*" onchange='readURL(this);' />
+        <img id="blah" src="#" alt="your image" /> 
+        <div>
+        <input type="submit" value="upload this image">
+        </div>
+  </form>
   {% for img in images %}
       <div>
       <img class="show" src='/dyimg_serve?img_id={{img.key.urlsafe()}}'></img>
