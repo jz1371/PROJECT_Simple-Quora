@@ -41,6 +41,7 @@ class Question(ndb.Model):
     content_ = ndb.StringProperty(indexed=False)
     image_ = ndb.BlobProperty()
     votes_ = ndb.IntegerProperty(indexed=True)
+    views_ = ndb.FloatProperty(indexed=True)
     date_created_ = ndb.DateTimeProperty(auto_now_add=True)
     date_last_modified_ = ndb.DateTimeProperty()
     tags_ = ndb.StringProperty(repeated=True)
@@ -117,15 +118,6 @@ def post_vote(author, question, vote, answer=None):
 #         answer.date_last_modified_ = datetime.datetime.now()
         answer.put()
             
-
-def view(qid):
-    ans_qry = Answer.query(ancestor=ndb.Key('qid', qid))
-    answers = ans_qry.fetch()
-    profile = {
-        'answers' : answers,
-    }
-    return 
-
 
 # [ WEB ENVIRONMENT ]
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -205,8 +197,6 @@ class PostQuestionHandler(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
         q_url = self.request.get('q')
-        #TODO: check user
-
         # update existing one
         if q_url:
             q_key = ndb.Key(urlsafe=q_url)
@@ -216,6 +206,7 @@ class PostQuestionHandler(webapp2.RequestHandler):
             question = Question(parent=ndb.Key('uid', user.user_id()))
             question.author_ = user
             question.votes_ = 0
+            question.views_ = -0.5 
 #             file_upload = self.request.POST.get("img", None)
             if self.request.get('img'):
                 file_upload = self.request.POST.get('img', None)
@@ -304,6 +295,8 @@ class ViewHandler(webapp2.RequestHandler):
 #         ans_qry = Answer.query(ancestor=ndb.Key('qid', qid))
         ans_qry = Answer.query(ancestor=q_key).order(-Answer.votes_)
         answers = ans_qry.fetch()
+        question.views_ = question.views_ + 0.5 
+        question.put()
 #         self.response.write(answers)
         substitutes = {
             'cur_user': users.get_current_user(),
@@ -314,6 +307,7 @@ class ViewHandler(webapp2.RequestHandler):
             'url_linktext' : url_linktext,
         }
         make_page(self, 'view.html', substitutes)
+#         question.put()
 # [ END : Request Handler ]
 
 class VoteHandler(webapp2.RedirectHandler):

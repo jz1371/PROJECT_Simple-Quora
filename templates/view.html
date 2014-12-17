@@ -62,7 +62,8 @@ function readURL(input) {
   {% endif %}
   <blockquote>
   </blockquote>
-  {{question.votes_ }} 
+  <label> views: </label> {{question.views_  | int }}
+  <label> votes: </label> {{question.votes_ }}
   <input type="button" value="Up" onClick='location.href="/vote?v=up&q={{question.key.urlsafe()}}"' > 
   <input type="button" value="Down" onClick='location.href="/vote?v=down&q={{question.key.urlsafe()}}"' > 
   <div class="timestamp">
