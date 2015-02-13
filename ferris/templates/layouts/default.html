@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+    <title>{% block layout_head_title %}
+            {% if scaffolding %}{{scaffolding.title}}{% endif %}
+            {{inflector.humanize(this.route.action)}}
+        {% endblock %}</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap-theme.min.css">
+
+    <!-- Initial Scripts -->
+    <script src="//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    {% block layout_head %}
+        {{this.events.layout_head()}}
+    {% endblock %}
+
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-default" role="navigation navbar-default" role="navigation">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">Questions</a>
+    </div>
+    <ul class="nav navbar-nav">
+        <li><a href="{{uri('questions:list')}}">All</a></li>
+        <!-- route for ~/questions?mine=True  -->
+        <li><a href="{{uri('questions:list', mine=True)}}">Mine</a></li>
+        <li><a href="{{uri('questions:add')}}">New</a></li>
+    </ul>
+</nav>
+
+{% block layout_body %}
+    {% block layout_before_content %}
+        {{this.events.layout_before_content()}}
+    {% endblock %}
+        {% include "elements/flash_messages.html" with context %}
+        
+    {% block layout_content %} {% endblock %}
+        
+    {% block layout_after_content %}
+        {{this.events.layout_after_content()}}
+    {% endblock %}
+{% endblock %}
+
+    <!-- Post Body Scripts -->
+    <script type="text/javascript" src="/ferris/js/bootstrap.js"></script>
+    {% block layout_scripts %}
+        {{this.events.layout_scripts()}}
+    {% endblock %}
+
+</body>
+</html>

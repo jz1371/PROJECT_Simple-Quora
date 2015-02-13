@@ -10,33 +10,14 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-- kind: Answer
-  ancestor: yes
+- kind: Post
   properties:
-  - name: votes_
-    direction: desc
-
-- kind: Greeting
-  ancestor: yes
-  properties:
-  - name: date
+  - name: created_by
+  - name: created
     direction: desc
 
 - kind: Question
   properties:
-  - name: date_last_modified_
-    direction: desc
-  - name: views_
-    direction: desc
-
-- kind: Question
-  properties:
-  - name: tags_
-  - name: date_created_
-    direction: desc
-
-- kind: Question
-  properties:
-  - name: tags_
-  - name: date_last_modified_
+  - name: created_by
+  - name: created
     direction: desc
