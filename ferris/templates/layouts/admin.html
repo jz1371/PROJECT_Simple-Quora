@@ -9,11 +9,11 @@
         {% endblock %}
     </title>
 
-    <!-- Styles -->
+    {# Styles #}
     <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap-theme.min.css">
 
-    <!-- Initial Scripts -->
+    {# Initial Scripts #}
     <script src="//www.google.com/jsapi"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
@@ -52,7 +52,7 @@
         {{this.events.layout_after_content()}}{% endblock %}
 {% endblock %}
 
-    <!-- Post Body Scripts -->
+    {# Post Body Scripts #}
     <script type="text/javascript" src="/ferris/js/bootstrap.js"></script>
     <script type="text/javascript">
     $(function(){$('body').tooltip({selector: "a[rel=tooltip], *[data-tooltip]"})});
