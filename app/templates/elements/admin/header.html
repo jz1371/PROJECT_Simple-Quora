@@ -1,0 +1,18 @@
+<!-- override /ferris/templates/elements/admin/header.html -->
+<header>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="row-fluid">
+            <div class="col-lg-12">
+                <a href="/" class="navbar-brand">Administration Console</a>
+                <p class="navbar-text pull-right">
+                	<span class="navbar-link">
+                		{% if this.user and ferris.is_current_user_admin() %}
+		                	{{ferris.format_value(this.user)}} 
+                		{% endif %}
+    	            	<i class="icon-user"></i>
+                	</span>
+                </p>
+            </div>
+        </div>
+    </nav>
+</header>

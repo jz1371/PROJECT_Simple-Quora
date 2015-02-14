@@ -38,9 +38,13 @@ class Question(BasicModel):
         return cls.find_all_by_created_by(user).order(-cls.created)
     
     
-    def modify_views(self):
-        self.views += 1
+    def increase_views(self):
+        """
+        Increases views of question by 1 each time question is viewed.
+        """
+        if self.views == None:
+            self.views = 1 
+        else:
+            self.views += 1
         self.put()
-        
-        
         

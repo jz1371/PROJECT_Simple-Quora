@@ -1,0 +1,49 @@
+{# file: app.templates.layouts.default.html #}
+{% import 'scaffolding/macros.html' as s with context %}
+<!doctype html>
+<html>
+<head>
+    <title>{% block layout_head_title %} {% if scaffolding %}{{scaffolding.title}}{% endif %} {{inflector.humanize(this.route.action)}} {% endblock %}</title>
+
+    {# Styles #}
+    <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/navbar.css">
+
+    {# Initial Scripts #}
+    <script src="//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    {% block layout_head %} {{this.events.layout_head()}} {% endblock %}
+
+    {% block layout_header %}
+        {% include 'elements/header.html' %}
+    {% endblock %}
+</head>
+
+<body>
+{% block layout_body %}
+    {% block layout_before_content %}
+    	{{this.events.layout_before_content()}}
+    {% endblock %}
+    
+    {% include "elements/flash_messages.html" with context %}
+        
+        
+    {% block layout_content %}
+    	{% include 'elements/body_container.html' %}
+    {% endblock %}
+        
+    {% block layout_after_content %}
+        {{this.events.layout_after_content()}}
+    {% endblock %}
+{% endblock %}
+
+    {# Post Body Scripts #}
+    <script type="text/javascript" src="/ferris/js/bootstrap.js"></script>
+    {% block layout_scripts %}
+        {{this.events.layout_scripts()}}
+    {% endblock %}
+
+</body>
+</html>
