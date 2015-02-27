@@ -43,7 +43,12 @@ skip_files:
 
 handlers:
 
+- url: /(.*)/add
+  script: main.main_app
+  login: required
+
 # Main script
 - url: .*
   script: main.main_app
-  login: required
+#  login: required
+

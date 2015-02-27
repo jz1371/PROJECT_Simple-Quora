@@ -1,9 +1,9 @@
 '''
-File: app.controllers.questions.py
+File: app/controllers/questions.py
 ----------------------------------------------
 
 @author: Jingxin Zhu
-Created on 2015/02/10
+@date  : 2015/02/10
 ----------------------------------------------
 '''
 
@@ -47,6 +47,9 @@ class Questions(Controller):
         return scaffold.add(self)
 
     def list(self):
+        # properties to show when listing items
+        self.scaffold.display_properties = ("title", "views")
+
         if 'query' in self.request.params:
             # list for user's searching request
             self.context['questions'] = self.components.search()
@@ -61,6 +64,9 @@ class Questions(Controller):
         """
         Non-admin user can only edit questions created by himself/herself.
         """
+        # properties to show when listing items
+        self.scaffold.display_properties = ("title", "content", "tags")
+
         question = self.util.decode_key(key).get()
 
         if question.created_by != self.user:

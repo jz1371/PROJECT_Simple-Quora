@@ -7,8 +7,8 @@
 <nav class="navbar navbar-default" role="navigation navbar-default" role="navigation">
 	<div class="container clearfix">
 	{% include 'elements/nav_logo.html' %}
-	{{search.filter(uri('questions:list'))}} 
     <ul class="nav navbar-nav">
+		<li>{{search.filter(uri('questions:list'))}}</li> 
         <li class="active"><a href="{{uri('questions:list')}}">Questions</a></li>
         <li class="active"><a href="{{uri('questions:add')}}" target="_blank">Ask</a></li>
         <li class="active dropdown">

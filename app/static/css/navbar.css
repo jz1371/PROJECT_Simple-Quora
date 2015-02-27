@@ -26,6 +26,19 @@
 	height: 28px;
 }
 
+#login-a {
+	padding-top: 15px;
+	padding-bottom: 20px;
+	padding-left: 10px;
+	padding-right: 0px;
+}
+
+.navbar-nav>li>a {
+	padding-top: 15px;
+	padding-bottom: 20px;
+}
+
+
 .site-search {
     position: relative;
     float: left;
@@ -34,7 +47,7 @@
 
 .site-search input[type="text"] {
 	position: relative;
-	width: 300px;
+	width: 200px;
 }
 
 /* .site-search form {

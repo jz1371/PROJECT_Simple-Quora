@@ -6,7 +6,7 @@
 {% block layout_content %}
 
 {% set item = context[scaffolding.singular] %}
-
+<div class="body container">
 <table class='table table-striped'>
     <thead>
         <tr>
@@ -31,4 +31,5 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endblock %}
