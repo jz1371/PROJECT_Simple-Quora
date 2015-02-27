@@ -1,11 +1,14 @@
 body {
-	width: 1020px;
-	padding: 20px;
+}
+
+.container {
+	width: 980px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .body_container {
 	width: 980px;
-	margin-top: 20px;
 	margin-left: auto;
 	margin-right: auto;
 }

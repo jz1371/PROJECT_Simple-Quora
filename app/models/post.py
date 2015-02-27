@@ -12,9 +12,12 @@ Created on 2015/02/10
 from ferris import BasicModel
 from google.appengine.ext import ndb
 from google.appengine.api import users
+from ferris.behaviors import searchable
 
 
 class Post(BasicModel):
+    class Meta: 
+        behaviors = (searchable.Searchable,)
     title = ndb.StringProperty(required=True)
     content = ndb.TextProperty()
 

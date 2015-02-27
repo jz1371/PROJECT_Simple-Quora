@@ -1,20 +1,34 @@
 '''
-File: app.models.question.py
+File: app/models/question.py
+--------------------------------------------
 
 @author: Jingxin Zhu 
+@date  : 2015.02.10
+--------------------------------------------
 '''
 
-from ferris.core.ndb.model import BasicModel
 from google.appengine.ext import ndb
 from google.appengine.api import users
+from ferris.core.ndb.model import BasicModel
+from ferris.behaviors.searchable import Searchable
 
 class Question(BasicModel):
     '''
-    Question model that describes a question posted by user.
+    'Question' model that describes a question posted by user.
     '''
+    
+    class Meta:
+        '''
+        global configuration for model.
+        '''
+        # allow this model for user searching
+        behaviors = (Searchable, )
 
+    # Model's properties
+    # 'created_by', 'modified_by', 'created', 'modified' are automatically 
+    # added to model due to BasicModel
     title   = ndb.StringProperty(required=True)
-    content = ndb.TextProperty(indexed=False)
+    content = ndb.TextProperty()
     image   = ndb.BlobProperty()
     votes   = ndb.IntegerProperty(indexed=True)
     views   = ndb.IntegerProperty()

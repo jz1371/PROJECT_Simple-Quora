@@ -9,7 +9,7 @@
 	{% include 'elements/nav_logo.html' %}
 	{{search.filter(uri('questions:list'))}} 
     <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Questions</a></li>
+        <li class="active"><a href="{{uri('questions:list')}}">Questions</a></li>
         <li class="active"><a href="{{uri('questions:add')}}" target="_blank">Ask</a></li>
         <li class="active dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mine <span class="caret"></span></a>

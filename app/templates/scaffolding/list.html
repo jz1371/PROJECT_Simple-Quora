@@ -1,10 +1,17 @@
-{# file: app.templates.scaffolding.list.html override ferris.templates.scaffolding.list #}
+{# 
+	file: app/templates/scaffolding/list.html 
+	override ferris.templates.scaffolding.list 
+#}
 {% import 'scaffolding/macros.html' as s with context %}
+{% import "macros/search.html" as search with context %}  {# for search #}
+
 {% extends s.layout() %}
 
 {% block layout_content %}
 
-{{s.override_include('nav.html')}}
+{{search.info()}}
+
+{# {{s.override_include('nav.html')}} #}
 
 {% set list = context[scaffolding.plural] %}
 

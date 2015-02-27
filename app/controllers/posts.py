@@ -11,6 +11,8 @@ Created on 2015/02/11
 
 from ferris import Controller, scaffold
 from wtforms.ext.appengine.ndb import model_form 
+from ferris.components.search import Search
+
 
 class Posts(Controller):
     """
@@ -21,7 +23,7 @@ class Posts(Controller):
     # configuration for meta
     class Meta:
         prefixes = ('admin',)
-        components = (scaffold.Scaffolding,)
+        components = (scaffold.Scaffolding, Search)
         
     # configuration for scaffolding
     class Scaffold:
