@@ -8,18 +8,10 @@
 	<div class="container clearfix">
 	{% include 'elements/nav_logo.html' %}
     <ul class="nav navbar-nav">
-		<li>{{search.filter(uri('questions:list'))}}</li> 
-        <li class="active"><a href="{{uri('questions:list')}}">Questions</a></li>
-        <li class="active"><a href="{{uri('questions:add')}}" target="_blank">Ask</a></li>
-        <li class="active dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mine <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                <li><a href="{{uri('questions:list', mine=True)}}">Asked</a></li>
-                <li><a href="#">Answered</a></li>
-            </ul>
-        </li>              
-    </ul>
-    {% include 'elements/login.html' %}
+		<li>{{search.filter(uri('questions:list'))}}</li>
+		{% include 'elements/nav_bar.html' %}
+	</ul>
+    {% include 'elements/nav_login.html' %}
     </div>
 </nav>
 </div>
