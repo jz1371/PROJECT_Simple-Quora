@@ -15,6 +15,7 @@ from ferris.behaviors.searchable import Searchable
 class Question(BasicModel):
     '''
     'Question' model that describes a question posted by user.
+
     '''
     
     class Meta:
@@ -24,14 +25,14 @@ class Question(BasicModel):
         # allow this model for user searching
         behaviors = (Searchable, )
 
-    # Model's properties
+    # === Model's properties ===#
     # 'created_by', 'modified_by', 'created', 'modified' are automatically 
     # added to model due to BasicModel
     title   = ndb.StringProperty(required=True)
     content = ndb.TextProperty()
     image   = ndb.BlobProperty()
     votes   = ndb.IntegerProperty(indexed=True)
-    views   = ndb.IntegerProperty()
+    views   = ndb.IntegerProperty(default=0)
     tags    = ndb.StringProperty(repeated=True)
     
     @classmethod

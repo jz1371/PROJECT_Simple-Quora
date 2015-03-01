@@ -12,6 +12,8 @@ from ferris.components.search import Search
 from ferris.components.pagination import Pagination
 from wtforms.ext.appengine.ndb import model_form 
 
+import time
+
 class Questions(Controller):
     '''
     TODO: classdocs
@@ -19,9 +21,9 @@ class Questions(Controller):
     class Meta:
         """ global configuration """
         prefixes = ('admin',)
+        # allow utilities of 'search', 'pagination', and take advantage of 'scaffolding'
         components = (scaffold.Scaffolding, Pagination, Search)
 
-        # allow utilities of 'search', 'pagination', and take advantage of 'scaffolding'
         
     class Scaffold:
         """ global configuration """
@@ -44,7 +46,9 @@ class Questions(Controller):
     def add(self):
         QuestionForm = model_form(self.meta.Model, exclude=("votes", "views", ))
         self.scaffold.ModelForm = QuestionForm 
-        return scaffold.add(self)
+        returnKey = scaffold.add(self)
+        time.sleep(0.1)     # in order to let item can be queried immediately after adding
+        return returnKey
 
     def list(self):
         # properties to show when listing items

@@ -8,6 +8,8 @@ Github Repository:
 
 Reference
     
-1. http://ferris-framework.appspot.com/
+1. ferris-framework: http://ferris-framework.appspot.com/
     
-2. http://bootsnipp.com/snippets/featured/account-in-navbar
+2. wtforms: http://wtforms.simplecodes.com/docs/1.0.2/     
+
+3. Font Awesome: http://fortawesome.github.io/Font-Awesome/

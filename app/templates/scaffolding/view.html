@@ -1,13 +1,13 @@
-
+{#
+	File: app/templates/scaffolding/view.html
+#}
 {% import 'scaffolding/macros.html' as s with context %}
 {% extends s.layout() %}
 
-
 {% block layout_content %}
-
 {% set item = context[scaffolding.singular] %}
 <div class="body container">
-<table class='table table-striped'>
+<table class='table table-hover table-striped'>
     <thead>
         <tr>
             <th>Property</th>
