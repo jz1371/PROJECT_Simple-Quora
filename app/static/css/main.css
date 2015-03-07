@@ -16,3 +16,7 @@ body {
 .form {
 	width: 500px;
 }
+
+.list-group-item>.badge {
+	float: center;
+}

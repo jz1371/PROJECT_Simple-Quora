@@ -1,9 +1,59 @@
 {# File: app/templates/question/view.html #}
+
 {% import 'scaffolding/macros.html' as s with context %}
 {% extends 'scaffolding/view.html' %}
 
-{% set item = context[scaffolding.singular] %}
+{% set question = context[scaffolding.singular] %}
+{% set answers = context['answers'] %}
 {% block after_content %}
-{% block answers %} {% endblock %}
-<a href="{{this.uri(controller='answers', action='answer', questionKey=this.encode_key(item))}}" class="btn btn-sm btn-primary">Create Answer</a>
+
+{% block answers %} 
+<div class="">
+{% if answers %}<h5> Answers </h5>{% endif %}
+{% for answer in answers %}
+<ul class="list-group">
+  <li class="list-group-item">
+  <span class='badge'>{{loop.index}}</span>
+  {% for property in scaffolding.display_properties %}
+  {% if answer[property] != None %}{{s.print_value(answer[property])}}{% endif %}
+  {% endfor %}
+  <div class='btn-group' style="float: right;">
+  {% block item_action_buttons scoped %}
+      {{s.controller_action_buttons(answer, 'answers')}}
+  {% endblock %}
+  </div>
+  </li>
+</ul>
+{% endfor %}
+</div>
+{% endblock answers %}
+
+
+{#
+<table class="table-striped table-condensed">
+<tbody>
+ <tr>
+    <td class="col-lg-1">
+        <span class='badge' title='{{answer.key.urlsafe()}}'>{{loop.index}}</span>
+    </td>
+    {% for property in scaffolding.display_properties %}
+    <td>
+        {% if answer[property] != None %}{{s.print_value(answer[property])}}{% endif %}
+    </td>
+    {% endfor %}
+    <td class="col-lg-2 text-right">
+        <div class='btn-group'>
+        {% block item_action_buttons scoped %}
+            {{s.controller_action_buttons(answer, 'answers')}}
+        {% endblock %}
+        </div>
+    </td>
+ </tr>
+</tbody> 
+</table>
+#}
+<hr>
+<div class="">
+<a href="{{this.uri(controller='answers', action='answer', questionKey=this.encode_key(question))}}" class="btn btn-sm btn-primary">Create Answer</a>
+</div>
 {% endblock after_content %}

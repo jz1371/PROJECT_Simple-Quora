@@ -43,7 +43,7 @@ skip_files:
 
 handlers:
 
-- url: /(.*)/add
+- url: /(.*)/(add|answer)/(.*)
   script: main.main_app
   login: required
 

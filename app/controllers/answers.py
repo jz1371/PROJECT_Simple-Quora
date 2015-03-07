@@ -7,13 +7,13 @@ File: app/controllers/answers.py
 '''
 
 from ferris import Controller, scaffold
+from ferris import model_form
 from ferris.components.search import Search
 from ferris.components.pagination import Pagination
-from ferris.core.controller import route_with, route
+from ferris.core.controller import route
+from app.models.answer import Answer
 from google.appengine.ext import ndb
-from wtforms.ext.appengine.ndb import model_form 
 import time
-from jinja2.runtime import to_string
 
 class Answers(Controller):
     '''
@@ -30,6 +30,7 @@ class Answers(Controller):
         # properties of model to show to user when controlling model
         # [!] if only property to show, add comma at the end. e.g.: =("title",)
         display_properties = ("content", "created_by", "votes")
+        ModelForm = model_form(Answer, only=("content",))
 
     # ==== Administration user's controller ==== #
     admin_list = scaffold.list        #lists all 
@@ -38,12 +39,11 @@ class Answers(Controller):
     admin_edit = scaffold.edit        #edit an instance 
     admin_delete = scaffold.delete    #delete an instance 
  
+
     # ==== Non-administration user's controller ==== #
-    
+
     @route
     def answer(self, questionKey):
-        AnswerForm = model_form(self.meta.Model, only=("content",))
-        self.scaffold.ModelForm = AnswerForm 
         def ancestored_create_factory(controller):
             return controller.meta.Model(parent=ndb.Key("Question", questionKey))
         self.scaffold.create_factory = ancestored_create_factory
@@ -99,4 +99,5 @@ class Answers(Controller):
 
     def view(self, key):
         self.scaffold.display_properties = ("content",)
+        print self.meta.Model.all_answers_by_user()
         return scaffold.view(self, key)

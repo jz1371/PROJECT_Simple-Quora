@@ -51,6 +51,10 @@ class Answer(BasicModel):
     def create_answer_by_parent(cls, questionKey):
         return cls(parent=ndb.Key("Question", questionKey))
         
+    @classmethod
+    def all_answers_by_question(cls, key):
+        questionKey = ndb.Key("Question", key)
+        return cls.query(ancestor=questionKey).order(-cls.created).fetch()
         
     def increase_views(self):
         """

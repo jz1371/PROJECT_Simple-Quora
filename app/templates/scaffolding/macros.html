@@ -69,6 +69,17 @@
 {%- endmacro %}
 
 {#
+    Generates the standard suite of controller-action buttons for an item (view, edit, delete)
+#}
+{% macro controller_action_buttons(item, controller, class=None) -%}
+    {% set class = class or ''%}
+    {{controller_action_button(item, controller, 'view', 'glyphicon-search', 'btn-success', class)}}
+    {{controller_action_button(item, controller, 'edit', 'glyphicon-pencil', 'btn-primary', class)}}
+    {{controller_action_button(item, controller, 'delete', 'glyphicon-trash', 'btn-danger', class, True)}}
+{%- endmacro %}
+
+
+{#
     Generates a single action button for an item
 #}
 {% macro action_button(item,action, icon='glyphicon-pencil', btn='btn-primary', class=None, confirm=False): -%}
