@@ -31,11 +31,12 @@
     {% endblock %}
     
     {% include "elements/flash_messages.html" with context %}
-        
+    
+    <div class="body_container">
     {% block layout_content %}
-
-    	{% include 'elements/body_container.html' %}
+    		{% include 'elements/body_container.html' %}
     {% endblock %}
+    </div> 
         
     {% block layout_after_content %}
         {{this.events.layout_after_content()}}

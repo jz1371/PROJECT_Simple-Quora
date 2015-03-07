@@ -1,17 +1,13 @@
-{# File: app/templates/scaffolding/form.html #}
-
-{% import 'scaffolding/macros.html' as s with context %}
+{# File: app/templates/elements/form.html #}
 {% import 'macros/form.html' as f with context %}
-{% extends s.layout() %}
 
-{% block layout_content %}
 {% block form_tag %}
 <form method="POST" action="{{scaffolding.form_action|default(this.uri(_pass_all=True), True)}}" class="form" enctype="{{scaffolding.form_encoding|default('application/x-www-form-urlencoded', True)}}" role="form">
 {% endblock form_tag %}
 
     {{this.events.before_form_fields()}}
- 
-    {% block button_above_form %}{{self.form_actions()}}{% endblock %}
+
+    {{self.form_actions()}}
 
     <hr>
 
@@ -45,4 +41,3 @@
     {{this.events.after_form_fields()}}
 
 </form>
-{% endblock layout_content %}

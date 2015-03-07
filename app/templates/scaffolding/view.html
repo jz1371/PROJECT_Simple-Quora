@@ -1,12 +1,9 @@
-{#
-	File: app/templates/scaffolding/view.html
-#}
+{# File: app/templates/scaffolding/view.html #}
 {% import 'scaffolding/macros.html' as s with context %}
 {% extends s.layout() %}
 
 {% block layout_content %}
 {% set item = context[scaffolding.singular] %}
-<div class="body container">
 <table class='table table-hover table-striped'>
     <thead>
         <tr>
@@ -31,5 +28,7 @@
         {% endfor %}
     </tbody>
 </table>
-</div>
+
+{% block after_content %}
 {% endblock %}
+{% endblock layout_content %}

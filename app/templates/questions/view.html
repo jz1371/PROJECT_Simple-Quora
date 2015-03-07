@@ -1,0 +1,9 @@
+{# File: app/templates/question/view.html #}
+{% import 'scaffolding/macros.html' as s with context %}
+{% extends 'scaffolding/view.html' %}
+
+{% set item = context[scaffolding.singular] %}
+{% block after_content %}
+{% block answers %} {% endblock %}
+<a href="{{this.uri(controller='answers', action='answer', questionKey=this.encode_key(item))}}" class="btn btn-sm btn-primary">Create Answer</a>
+{% endblock after_content %}

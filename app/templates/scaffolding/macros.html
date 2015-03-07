@@ -1,6 +1,3 @@
-{#
-	File: app/scaffolding/macros.html
-#}
 
 {% import 'macros/pagination.html' as pagination with context %}
 {% import "macros/search.html" as search with context %}  {# for search #}
@@ -55,12 +52,28 @@
 
 
 {#
+    Generates a single controller-action button for an item
+#}
+{% macro controller_action_button(item, controller, action, icon='glyphicon-pencil', btn='btn-primary', class=None, confirm=False): -%}
+    {% if this.uri_exists(controller=controller, action=action) %}
+        <a href="{{ action_uri(controller=controller, action=action, key=this.encode_key(item)) }}"
+            class='btn btn-sm {{btn}} {{class}}'
+            rel="tooltip"
+            title='{{inflector.titleize(action)}}'
+            {% if confirm: %}
+            onclick='javascript: return confirm("Are you sure you want to delete this item?");'
+            {% endif %}>
+            <i class="glyphicon {{icon}} icon-white"></i>
+        </a>
+    {% endif %}
+{%- endmacro %}
+
+{#
     Generates a single action button for an item
 #}
-{% macro action_button(item, action, icon, btn, class=None, confirm=False): -%}
+{% macro action_button(item,action, icon='glyphicon-pencil', btn='btn-primary', class=None, confirm=False): -%}
     {% if this.uri_exists(action=action) %}
-        <a
-            href='{{ action_uri(action,key=this.encode_key(item)) }}'
+        <a href='{{action_uri(action, key=this.encode_key(item))}}'
             class='btn btn-sm {{btn}} {{class}}'
             rel="tooltip"
             title='{{inflector.titleize(action)}}'
