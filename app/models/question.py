@@ -31,7 +31,7 @@ class Question(BasicModel):
     title   = ndb.StringProperty(required=True)
     content = ndb.TextProperty()
     image   = ndb.BlobProperty()
-    votes   = ndb.IntegerProperty(indexed=True)
+    votes   = ndb.IntegerProperty(default=0, indexed=True)
     views   = ndb.IntegerProperty(default=0)
     tags    = ndb.StringProperty(repeated=True)
     

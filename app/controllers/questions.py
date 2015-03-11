@@ -63,7 +63,11 @@ class Questions(Controller):
         else:
             # list all model items 
             self.context['questions'] = self.meta.Model.all_questions()
+
+        time.sleep(0.1)
+        return
     
+
     def edit(self, key):
         """
         Non-admin user can only edit questions created by himself/herself.
@@ -93,6 +97,4 @@ class Questions(Controller):
         question = self.util.decode_key(key).get()
         question.increase_views()
         return scaffold.view(self, key)
-    
-    
     

@@ -1,0 +1,10 @@
+{# File: app/templates/elements/flash_messages.html #}
+
+{% if this.flash_messages %}
+{% for flash in this.flash_messages() %}
+    <div id="flash_message" class="alert alert-{{flash[1]}}">
+      <button type="button" class="close" data-dismiss="alert">×</button>
+      {{flash[0]}}
+    </div>
+{% endfor %}
+{% endif %}

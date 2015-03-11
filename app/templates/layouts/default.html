@@ -15,6 +15,7 @@
     {# Initial Scripts #}
     <script src="//www.google.com/jsapi"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jqueryscript.js"></script>
     {% block layout_head %} {{this.events.layout_head()}} {% endblock %}
 
 </head>
@@ -30,9 +31,10 @@
     	{{this.events.layout_before_content()}}
     {% endblock %}
     
-    {% include "elements/flash_messages.html" with context %}
-    
     <div class="body_container">
+
+    {% include "elements/flash_messages.html" with context %}
+
     {% block layout_content %}
     		{% include 'elements/body_container.html' %}
     {% endblock %}
