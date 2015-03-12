@@ -10,7 +10,7 @@ from ferris import Controller, scaffold
 from ferris import model_form
 from ferris.components.search import Search
 from ferris.components.pagination import Pagination
-from ferris.core.controller import route
+from ferris.core.controller import route    # for @route
 from app.models.answer import Answer
 from google.appengine.ext import ndb
 import time
@@ -99,5 +99,4 @@ class Answers(Controller):
 
     def view(self, key):
         self.scaffold.display_properties = ("content",)
-        print self.meta.Model.all_answers_by_user()
         return scaffold.view(self, key)

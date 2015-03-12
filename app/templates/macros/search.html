@@ -27,7 +27,7 @@
 
 {% macro info() -%}
     {% if search_error %}
-        <div class="alert alert-block alert-error">
+        <div id="flash_message" class="alert alert-block alert-error">
           <a class="close" data-dismiss="alert">×</a>
           <h4 class="alert-heading">Whoa, now!</h4>
           It appears that you somehow gave me an invalid search query or something went horribly wrong, please try again with a different query. <br/>
@@ -43,12 +43,9 @@
     {% endif %}
 
     {% if search_query and not search_results %}
-        <div class="alert alert-info">
+        <div id="flash_message" class="alert alert-info">
             <a class="close" data-dismiss="alert">×</a>
             <h4 class="alert-heading">No results found</h4>
-            Sorry, I couldn't find anything with your query. Please try again. If you would like to learn more about querying,
-            <a href='https://developers.google.com/appengine/docs/python/search/overview#Query_Language_Overview'>
-            read here</a>.
         </div>
     {% endif %}
 {%- endmacro %}

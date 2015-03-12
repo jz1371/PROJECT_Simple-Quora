@@ -1,7 +1,6 @@
 '''
 File: app/controllers/questions.py
 ----------------------------------------------
-
 @author: Jingxin Zhu
 @date  : 2015/02/10
 ----------------------------------------------
@@ -24,6 +23,7 @@ class Questions(Controller):
         prefixes = ('admin',)
         # allow utilities of 'search', 'pagination', and take advantage of 'scaffolding'
         components = (scaffold.Scaffolding, Pagination, Search)
+        pagination_limit = 10
 
         
     class Scaffold:
@@ -93,8 +93,11 @@ class Questions(Controller):
         self.scaffold.display_properties = ("title", "content", "tags")
 #         self.context['answers'] = Answer.all_answers_by_question(key)
         self.context['answers'] = Answer.all_answers_by_question(key)
-        print self.context['answers']
+        self.context['display_properties'] = ("content",)
         question = self.util.decode_key(key).get()
         question.increase_views()
         return scaffold.view(self, key)
     
+    ###### Helper Functions #######
+    def getQuestion(self, key):
+        return self.util.decode_key(key)

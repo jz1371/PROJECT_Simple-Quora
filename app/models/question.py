@@ -1,7 +1,6 @@
 '''
 File: app/models/question.py
 --------------------------------------------
-
 @author: Jingxin Zhu 
 @date  : 2015.02.10
 --------------------------------------------
@@ -17,7 +16,6 @@ class Question(BasicModel):
     'Question' model that describes a question posted by user.
 
     '''
-    
     class Meta:
         '''
         global configuration for model.

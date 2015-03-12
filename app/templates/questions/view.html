@@ -1,59 +1,44 @@
 {# File: app/templates/question/view.html #}
 
 {% import 'scaffolding/macros.html' as s with context %}
+{% import 'macros.html' as m with context %}
 {% extends 'scaffolding/view.html' %}
 
 {% set question = context[scaffolding.singular] %}
 {% set answers = context['answers'] %}
+{% set display = context['display_properties'] %}
+
 {% block after_content %}
 
+{{m.vote_suite(question, target='question', class='btn', large=True)}}
+
 {% block answers %} 
+
 <div class="">
 {% if answers %}<h5> Answers </h5>{% endif %}
 {% for answer in answers %}
-<ul class="list-group">
-  <li class="list-group-item">
-  <span class='badge'>{{loop.index}}</span>
-  {% for property in scaffolding.display_properties %}
+<table class="table table-striped">
+ <tbody>
+  <td class="vote-suite">{{m.vote_suite(answer)}}</td>
+<!--   <td class="answer-badge"><span class='badge'>{{loop.index}}</span></td> -->
+  {% for property in display %}
+  <td>
   {% if answer[property] != None %}{{s.print_value(answer[property])}}{% endif %}
+  </td>
   {% endfor %}
+  <td>
   <div class='btn-group' style="float: right;">
-  {% block item_action_buttons scoped %}
-      {{s.controller_action_buttons(answer, 'answers')}}
-  {% endblock %}
+  {{s.controller_action_buttons(answer, 'answers')}}
   </div>
-  </li>
-</ul>
+  </td> 
+ </tbody>
+</table>
 {% endfor %}
 </div>
+
 {% endblock answers %}
-
-
-{#
-<table class="table-striped table-condensed">
-<tbody>
- <tr>
-    <td class="col-lg-1">
-        <span class='badge' title='{{answer.key.urlsafe()}}'>{{loop.index}}</span>
-    </td>
-    {% for property in scaffolding.display_properties %}
-    <td>
-        {% if answer[property] != None %}{{s.print_value(answer[property])}}{% endif %}
-    </td>
-    {% endfor %}
-    <td class="col-lg-2 text-right">
-        <div class='btn-group'>
-        {% block item_action_buttons scoped %}
-            {{s.controller_action_buttons(answer, 'answers')}}
-        {% endblock %}
-        </div>
-    </td>
- </tr>
-</tbody> 
-</table>
-#}
-<hr>
 <div class="">
 <a href="{{this.uri(controller='answers', action='answer', questionKey=this.encode_key(question))}}" class="btn btn-sm btn-primary">Create Answer</a>
 </div>
+
 {% endblock after_content %}

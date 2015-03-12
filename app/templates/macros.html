@@ -1,0 +1,12 @@
+{# File: app/templates/macros.html #}
+
+{#
+    Generate a suite for vote 
+#}
+{% macro vote_suite(item, target='answer', class=None, large=False) -%}
+<div class="">
+<a href="{{this.uri(controller='votes', action='up', target=target, key=this.encode_key(item))}}" {% if class %}class={{class}}{% endif %} rel="tooltip" title="vote up" ><i class="fa fa-thumbs-o-up {% if large %}fa-lg{% endif %}"></i></a>
+<span class="vote-count">{{item.votes}}</span>
+<a href="{{this.uri(controller='votes',action='down', target=target, key=this.encode_key(item))}}" {% if class %}class={{class}}{% endif %} rel="tooltip" title="vote down" ><i class="fa fa-thumbs-o-down {% if large %}fa-lg{% endif %}"></i></a>
+</div>
+{%- endmacro %}

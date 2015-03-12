@@ -28,7 +28,7 @@ class Answer(BasicModel):
     # added to model due to BasicModel
     content = ndb.TextProperty(required=True)
     image   = ndb.BlobProperty()
-    votes   = ndb.IntegerProperty(indexed=True)
+    votes   = ndb.IntegerProperty(default=0, indexed=True)
     
     @classmethod
     def all_answers(cls):
@@ -55,14 +55,4 @@ class Answer(BasicModel):
     def all_answers_by_question(cls, key):
         questionKey = ndb.Key("Question", key)
         return cls.query(ancestor=questionKey).order(-cls.created).fetch()
-        
-    def increase_views(self):
-        """
-        Increases views of question by 1 each time question is viewed.
-        """
-        if self.views == None:
-            self.views = 1 
-        else:
-            self.views += 1
-        self.put()
         

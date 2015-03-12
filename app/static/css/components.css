@@ -1,0 +1,23 @@
+.vote {
+	background: none;
+	box-shadow: none;
+	border: none;
+}
+
+.vote-suite {
+	vertical-align: top;
+	width: 5%;
+}
+
+.vote-count {
+/* 	padding: 0 15px; */
+	text-align: center;
+}
+
+.answer {
+	vertical-align: top;
+}
+
+.answer-badge {
+	width: 2%;
+}
