@@ -1,8 +1,8 @@
 {% macro filter(uri, examples=[], _pass_all=False) -%}
 <div class="site-search">
-    <form id='search-form' class="form-search form-inline" action="{{uri}}">
+    <form id='search-form' class="navbar-form navbar-left" role="search" action="{{uri}}">
         <div class="form-group">
-            <input type="text" name='query' tabindex=1 placeholder="Search Simple Quora" class="input-xlarge form-control search-query" value="{{search_query|default('')}}">
+            <input type="text" name='query' tabindex=1 placeholder="Search" class="input-xlarge form-control search-query" value="{{search_query|default('')}}">
         </div>
         {% if examples %}
         <span class='help-inline'>

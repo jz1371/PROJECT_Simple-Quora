@@ -3,25 +3,28 @@
 <!doctype html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
     <title>{% block layout_head_title %} {% if scaffolding %}{{scaffolding.title}}{% endif %} {{inflector.humanize(this.route.action)}} {% endblock %}</title>
 
     {# Styles #}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/ferris/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link rel="stylesheet" type="text/css" href="/css/navbar.css">
-    <link rel="stylesheet" type="text/css" href="/css/components.css">
 
     {# Initial Scripts #}
     <script src="//www.google.com/jsapi"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="/js/jqueryscript.js"></script>
     {% block layout_head %} {{this.events.layout_head()}} {% endblock %}
-
 </head>
 
 <body>
+<div class="container">
 {% block layout_body %}
 
     {% block layout_header %}
@@ -39,18 +42,16 @@
     {% block layout_content %}
     		{% include 'elements/body_container.html' %}
     {% endblock %}
-    </div> 
-        
-    {% block layout_after_content %}
-        {{this.events.layout_after_content()}}
-    {% endblock %}
+    </div>
+
+  {% block layout_after_content %}
+  {{this.events.layout_after_content()}} {% endblock %} {% endblock %}
+</div><!-- .container -->
+
+{# Post Body Scripts #}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+{% block layout_scripts %}
+{{this.events.layout_scripts()}}
 {% endblock %}
-
-    {# Post Body Scripts #}
-    <script type="text/javascript" src="/ferris/js/bootstrap.js"></script>
-    {% block layout_scripts %}
-        {{this.events.layout_scripts()}}
-    {% endblock %}
-
 </body>
 </html>
