@@ -19,7 +19,6 @@
     {# Initial Scripts #}
     <script src="//www.google.com/jsapi"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script type="text/javascript" src="/js/jqueryscript.js"></script>
     {% block layout_head %} {{this.events.layout_head()}} {% endblock %}
 </head>
 
@@ -50,6 +49,7 @@
 
 {# Post Body Scripts #}
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
 {% block layout_scripts %}
 {{this.events.layout_scripts()}}
 {% endblock %}
