@@ -4,15 +4,15 @@
 	<div class="container-fluid">
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
-		{% include 'elements/nav_brand.html' %}
+		{% include 'header/nav_brand.html' %}
 		</div>
 
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse"
 			id="bs-example-navbar-collapse-1">
 			{{search.filter(uri('questions:list'))}}
-			<ul class="nav navbar-nav">{% include 'elements/nav_bar.html' %} </ul>
-			<ul class="nav navbar-nav navbar-right">{% include 'elements/nav_login.html' %} </ul>
+			<ul class="nav navbar-nav">{% include 'header/nav_bar.html' %} </ul>
+			<ul class="nav navbar-nav navbar-right">{% include 'header/nav_login.html' %} </ul>
 		</div>
 		<!-- /.navbar-collapse -->
 	</div>
