@@ -99,8 +99,8 @@ settings['twitter_consumer_secret'] = 'TWITTER_CONSUMER_SECRET'
 # get your own consumer key and consumer secret by registering at https://developers.facebook.com/apps
 #Very Important: set the site_url= your domain in the application settings in the facebook app settings page
 # callback url must be: http://[YOUR DOMAIN]/login/facebook/complete
-settings['fb_api_key'] = 'FACEBOOK_API_KEY'
-settings['fb_secret'] = 'FACEBOOK_SECRET'
+settings['fb_api_key'] = '1592189004350323'
+settings['fb_secret'] = '8e116b89a9c707068a777c3ab25d8ead'
 
 #Linkedin Login
 #Get you own api key and secret from https://www.linkedin.com/secure/developer
@@ -134,7 +134,7 @@ settings['social_providers'] = {
 settings['log_email'] = False
 
 # If true, it will write in datastore a log of every visit
-settings['log_visit'] = True 
+settings['log_visit'] = False 
 
 # Optionally, you may use the settings plugin to dynamically
 # configure your settings via the admin interface. Be sure to

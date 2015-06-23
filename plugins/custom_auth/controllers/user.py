@@ -369,7 +369,10 @@ class User(Controller):
 
         elif provider_name == 'facebook':
             self.session['linkedin'] = None
-            perms = ['email', 'publish_stream']
+            # ! replace 'public_stream' with latest API 'public_actions'
+            # for more permissions see https://developers.facebook.com/docs/facebook-login/permissions/v1.0
+#             perms = ['email', 'user_about_me']
+            perms = ['email',]
             return self.redirect(facebook.auth_url(settings.get('fb_api_key'), callback_url, perms))
 
         elif provider_name == 'linkedin':
@@ -396,7 +399,9 @@ class User(Controller):
             else:
                 dest_url = self.uri_for('user:social_login_complete', provider_name=provider_name)
             try:
-                login_url = users.create_login_url(federated_identity=provider['uri'], dest_url=dest_url)
+                # use OpenID
+#                 login_url = users.create_login_url(federated_identity=provider['uri'], dest_url=dest_url)
+                login_url = users.create_login_url()
                 return self.redirect(login_url)
             except users.NotAllowedError:
                 message = 'You must enable Federated Login Before for this application.<br> <a href="http://appengine.google.com" target="_blank">Google App Engine Control Panel</a> -> Administration -> Application Settings -> Authentication Options'
