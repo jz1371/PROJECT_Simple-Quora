@@ -1,0 +1,64 @@
+{% extends "layouts/default.html" %}
+{% import 'macros/new_form.html' as f with context %}
+
+{% block layout_head_title %}Login - {{ferris.settings.get('app_name')}}{% endblock %}
+
+{% block layout_content %}
+
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+
+<div class="panel panel-default">
+<div class="panel-heading">
+Login
+</div>
+<div class="panel-body">
+
+{% if ferris.settings.get('enable_federated_login') %}
+<div class="row">
+    <div class="col-md-4 col-xs-6 form-group">
+        <a href="{{uri('user:social_login', provider_name='facebook')}}" class="btn btn-block btn-sm btn-primary">Facebook</a>
+    </div>
+    <div class="col-md-4 col-xs-6 form-group">
+        <a href="{{uri('user:social_login', provider_name='twitter')}}" class="btn btn-block btn-sm btn-info">Twitter</a>
+    </div>
+    <div class="col-md-4 col-xs-6 form-group">
+        <a href="{{uri('user:social_login', provider_name='google')}}" class="btn btn-block btn-sm btn-danger">Google</a>
+    </div>
+    <div class="col-md-4 col-xs-6 form-group">
+        <a href="{{uri('user:social_login', provider_name='linkedin')}}" class="btn btn-block btn-sm btn-default">LinkedIn</a>
+    </div>
+    <div class="col-md-4 col-xs-6 form-group">
+        <a href="{{uri('user:social_login', provider_name='github')}}" class="btn btn-block btn-sm btn-default">GitHub</a>
+    </div>
+    <div class="col-md-4 col-xs-6 form-group">
+        <a href="{{uri('user:social_login', provider_name='yahoo')}}" class="btn btn-block btn-sm btn-default">Yahoo</a>
+    </div>
+</div>
+<h3 class="text-center">Or</h3>
+{% endif %}
+
+<form method="POST" action="{{this.uri(_pass_all=True)}}" class="form-horizontal" enctype="application/x-www-form-urlencoded" role="form">
+
+  {{csrf}}
+
+  {{ f.form_field(form, form['email'], horizontal=True,  placeholder="Email") }}
+  {{ f.form_field(form, form['password'], horizontal=True,  placeholder='Password') }}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="remember"> Remember me
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="panel-footer"><button type="submit" class="btn btn-primary btn-lg">Sign in</button> <span class="text-muted">Don't have an account yet? <a href="{{uri('user:register')}}">Create one now!</a></span></div>
+</div>
+</form>
+
+</div>
+</div>
+{% endblock %}

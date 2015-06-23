@@ -1,4 +1,5 @@
-from ferris.core import routing, plugins
+from ferris.core import routing
+from ferris.core import plugins
 
 # Routes all App handlers
 routing.auto_route()
@@ -12,3 +13,5 @@ routing.redirect('/', to='/questions')
 # Plugins
 plugins.enable('settings')
 plugins.enable('oauth_manager')
+plugins.enable('custom_auth')
+plugins.enable('recaptcha')

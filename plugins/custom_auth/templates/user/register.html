@@ -1,0 +1,39 @@
+{% extends "layouts/default.html" %}
+{% import 'macros/form.html' as f with context %}
+
+{% block layout_content %}
+
+<div class="page-header">
+    <h1>Register</h1>
+</div>
+
+<form method="POST" action="{{this.uri(_pass_all=True)}}" class="form" enctype="application/x-www-form-urlencoded" role="form">
+
+    {{csrf}}
+
+    {% block form_fields %}
+        {% for field in form %}
+            {{ f.form_field(form, field) }}
+        {% endfor %}
+    {% endblock %}
+
+    <hr>
+
+    {% block form_actions %}
+    <div class="controls form-actions">
+        {% block cancel_button %}
+            {% if uri_exists(action='list') %}
+            <a class="btn btn-default" href="{{uri(action='list')}}">
+                {% block cancel_text %}Cancel{% endblock %}
+            </a>
+            {% endif %}
+        {% endblock %}
+        {% block submit_button %}
+            <button class="btn btn-primary" type="submit">
+                {% block submit_text %}Submit{% endblock %}
+            </button>
+        {% endblock %}
+    </div>
+    {% endblock %}
+</form>
+{% endblock %}

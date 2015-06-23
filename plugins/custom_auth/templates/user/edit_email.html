@@ -1,0 +1,10 @@
+{% extends "scaffolding/form.html" %}
+
+{% block layout_head_title %}Edit Email - {{user.full_name}}{% endblock %}
+
+{% block submit_text %}Update Email{% endblock %}
+
+{% block form_fields %}
+{{csrf}}
+{{ super() }}
+{% endblock %}

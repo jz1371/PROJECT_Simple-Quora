@@ -10,8 +10,12 @@ from ferris import Controller, scaffold
 from ferris.core.forms import model_form
 from ferris.components.search import Search
 from ferris.components.pagination import Pagination
+from ferris.components import oauth
 from app.models.answer import Answer
 from app.models.question import Question
+from google.appengine.api import users
+from apiclient.discovery import build
+
 import time
 
 class Questions(Controller):
@@ -22,7 +26,8 @@ class Questions(Controller):
         """ global configuration """
         prefixes = ('admin',)
         # allow utilities of 'search', 'pagination', and take advantage of 'scaffolding'
-        components = (scaffold.Scaffolding, Pagination, Search)
+        components = (scaffold.Scaffolding, Pagination, Search, oauth.OAuth)
+        oauth_scopes = ['https://www.googleapis.com/auth/userinfo.profile', ]
         pagination_limit = 10
 
         
@@ -45,9 +50,17 @@ class Questions(Controller):
     # ==== Non-administration user's controller ==== #
 
     # delegate scaffold.add 
+#     @oauth.require_credentials
     def add(self):
+#         http = self.oauth.http()
+#         service = build('oauth2', 'v2', http=http)
+#         user_info = service.userinfo().get().execute()
+        # more fields see here {@link https://developers.google.com/apis-explorer/#p/oauth2/v2/oauth2.userinfo.v2.me.get }
+#         return "Hello, you are %s" % user_info['name']
+        user = users.get_current_user()
         returnKey = scaffold.add(self)
         time.sleep(0.1)     # in order to let item can be queried immediately after adding
+        print user 
         return returnKey
 
     def list(self):

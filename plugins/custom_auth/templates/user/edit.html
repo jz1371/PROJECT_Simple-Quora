@@ -1,0 +1,88 @@
+{% extends "layouts/default.html" %}
+{% import 'macros/form.html' as f with context %}
+
+{% block layout_head_title %}Profile - {{user.full_name}}{% endblock %}
+
+{% block layout_content -%}
+<div class="page-header">
+    <h1>{{self.layout_head_title()}}</h1>
+</div>
+
+<form method="POST" action="{{this.uri(_pass_all=True)}}" class="form" enctype="application/x-www-form-urlencoded" role="form">
+
+    {{csrf}}
+
+    <div class="form-group">
+        <label>Email</label>
+        <div class="text-muted">{{user.email}}
+        <a href="{{uri('user:edit_email')}}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></a></div>
+    </div>
+
+    {%- block form_fields -%}
+        {%- for field in form -%}
+            {{- f.form_field(form, field) -}}
+        {%- endfor -%}
+    {%- endblock -%}
+
+    <div class="form-group">
+        <label>Set Password</label>
+        <div>
+            <a href="{{uri('user:edit_password')}}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-lock"></span> Set Password</a>
+        </div>
+    </div>
+
+    <hr>
+
+    {% block form_actions %}
+    <div class="controls form-actions">
+        {% block cancel_button %}
+            {% if uri_exists(action='list') %}
+            <a class="btn btn-default" href="{{uri(action='list')}}">
+                {% block cancel_text %}Cancel{% endblock %}
+            </a>
+            {% endif %}
+        {% endblock %}
+        {% block submit_button %}
+            <button class="btn btn-primary" type="submit">
+                {% block submit_text %}Submit{% endblock %}
+            </button>
+        {% endblock %}
+    </div>
+    {% endblock %}
+</form>
+
+<hr>
+
+{% if ferris.settings.get('enable_federated_login') %}
+    {% if used_providers %}
+        <div id="trird_party_login" class="existing-accociation">
+            <h4>Existing social associations:</h4>
+            <table class=" social-login-icons">
+                {% for provider in used_providers %}
+                    <tr>
+                        <td><span class="label label-default" class="social-btn social-btn-{{ provider.name }}" title="{{ provider.label }}">{{ provider.label }}</span></td>
+                        {% if used_providers|length > 1 or local_account %}
+                        <td>
+                            <form id="delete_social" action="{{uri('user:remove_social_login', provider_name=provider.name)}}" method="post"  provider="{{provider.name}}" >
+                                {{csrf}}
+                                <button class="btn btn-danger btn-xs" type="submit"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+    {% if unused_providers %}
+        <div id="trird_party_login" class="form-actions">
+            <h4>Associate account with:</h4>
+            <div class="social-login-icons">
+                {% for provider in unused_providers %}
+                    <a href="{{ uri('user:social_login', provider_name=provider.name) }}" class="social-btn social-btn-{{ provider.name }}" title="{{ provider.label }}">{{ provider.label }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
