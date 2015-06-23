@@ -7,6 +7,10 @@
     {% if field.type == 'HiddenField' or field.widget.input_type == 'hidden' %}
         {{ field(**kwargs) }}
     {% else %}
+    {# mask password input field #}
+    {% if field.type == 'PasswordField' or field.widget.input_type == 'password' or field.name.lower() == 'password' %}
+        {% set _ = kwargs.setdefault('type', 'password') %}
+    {% endif %}
 
         {% set css_classes = [kwargs.pop('class','')] %}
 

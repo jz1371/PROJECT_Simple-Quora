@@ -8,11 +8,15 @@
         {% set _ = kwargs.setdefault('readonly', true) %}
     {% endif %}
     {% set _ = kwargs.setdefault('tabindex', 0) %}
+    {# mask password input field #}
+    {% if field.type == 'PasswordField' or field.widget.input_type == 'password' or field.name.lower() == 'password' %}
+        {% set _ = kwargs.setdefault('type', 'password') %}
+    {% endif %}
 
     {% if field.type == 'HiddenField' or field.widget.input_type == 'hidden' %}
         {{ field(**kwargs) }}
     {% else %}
-
+        
         {% set css_classes = [kwargs.pop('class','')] %}
 
         {% if field.widget.__class__.__name__ in ('TextInput', 'Select', 'Text', 'PasswordInput', 'FileInput', 'TextArea'): %}
